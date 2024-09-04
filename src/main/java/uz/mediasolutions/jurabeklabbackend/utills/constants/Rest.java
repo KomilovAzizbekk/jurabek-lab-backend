@@ -10,14 +10,10 @@ public interface Rest {
             "/v3/api-docs/**",
             "/swagger-ui.html",
             "/webjars/**",
-            "/api/auth/**",
+            "/api/app/auth/**",
+            "/api/admin/auth/**",
             "/*",
             "/error",
-            "/api/app/catalog/**",
-            "/api/app/home/**",
-            "/api/app/favorites/**",
-            "/api/app/items/get/**",
-            "/api/app/profile/**",
     };
 
     String CREATED = "CREATED";

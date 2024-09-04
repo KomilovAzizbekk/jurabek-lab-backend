@@ -2,22 +2,27 @@ package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uz.mediasolutions.jurabeklabbackend.entity.RefreshToken;
 import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
+import uz.mediasolutions.jurabeklabbackend.repository.RefreshTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.secret.JwtService;
-import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
+import uz.mediasolutions.jurabeklabbackend.service.user.abs.UserAuthService;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl implements AuthService {
+public class UserAuthServiceImpl implements UserAuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public ResponseEntity<?> signIn(String lang, SignInDTO dto) {
@@ -63,7 +68,23 @@ public class AuthServiceImpl implements AuthService {
     private TokenDTO getToken(User user) {
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
-        return new TokenDTO("bearer", accessToken, refreshToken);
+
+        //Saving refresh token to database
+        RefreshToken token;
+        if (refreshTokenRepository.existsByUserId(user.getId())) {
+            token = refreshTokenRepository.findByUserId(user.getId());
+            token.setExpireDate(jwtService.extractExpiration(refreshToken));
+            token.setToken(passwordEncoder.encode(refreshToken));
+        } else {
+            token = RefreshToken.builder()
+                    .token(passwordEncoder.encode(refreshToken))
+                    .user(user)
+                    .expireDate(jwtService.extractExpiration(refreshToken))
+                    .build();
+        }
+        refreshTokenRepository.save(token);
+
+        return new TokenDTO("Bearer", accessToken, refreshToken);
     }
 
     private String getLanguage(String lang) {
