@@ -10,4 +10,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findFirstByUsernameAndEnabledIsTrueAndAccountNonExpiredIsTrueAndAccountNonLockedIsTrueAndCredentialsNonExpiredIsTrue(String username);
 
     Optional<User> findFirstByIdAndEnabledIsTrueAndAccountNonExpiredIsTrueAndAccountNonLockedIsTrueAndCredentialsNonExpiredIsTrue(UUID userId);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    User findByPhoneNumber(String phoneNumber);
 }

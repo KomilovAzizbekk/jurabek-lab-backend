@@ -5,7 +5,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import uz.mediasolutions.jurabeklabbackend.RoleName;
+import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
 import uz.mediasolutions.jurabeklabbackend.entity.template.AbsUUID;
 
 import java.util.Collection;
@@ -18,6 +18,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Builder
+@EqualsAndHashCode(callSuper = true)
 public class User extends AbsUUID implements UserDetails {
 
     @Column(unique = true)
@@ -33,8 +34,12 @@ public class User extends AbsUUID implements UserDetails {
 
     private String username;
 
+    private boolean registered;
+
     @Enumerated(EnumType.STRING)
     private RoleName role;
+
+    private String language;
 
     private boolean accountNonExpired;
 

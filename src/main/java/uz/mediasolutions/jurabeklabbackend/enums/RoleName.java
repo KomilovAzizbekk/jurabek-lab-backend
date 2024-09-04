@@ -1,4 +1,4 @@
-package uz.mediasolutions.jurabeklabbackend;
+package uz.mediasolutions.jurabeklabbackend.enums;
 
 public enum RoleName {
 
