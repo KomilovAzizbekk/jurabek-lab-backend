@@ -33,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
                         .registered(false)
                         .language(getLanguage(lang))
                         .build();
+                userRepository.save(user);
             }
             //todo "otp should be sent"
             return ResponseEntity.ok("OTP is sent");
