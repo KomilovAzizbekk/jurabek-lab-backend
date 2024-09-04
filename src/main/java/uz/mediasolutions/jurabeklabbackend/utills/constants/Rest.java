@@ -12,6 +12,7 @@ public interface Rest {
             "/webjars/**",
             "/api/app/auth/**",
             "/api/admin/auth/**",
+            "/api/files/get/**",
             "/*",
             "/error",
     };
