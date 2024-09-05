@@ -8,7 +8,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.SignInAdminDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "admin/auth")
-public interface AdminAuthController {
+public interface AuthController {
 
     @PostMapping("/sign-in")
     ResponseEntity<?> signIn(@RequestBody SignInAdminDTO dto);

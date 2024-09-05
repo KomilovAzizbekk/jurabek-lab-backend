@@ -3,15 +3,15 @@ package uz.mediasolutions.jurabeklabbackend.controller.admin.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.AdminProductController;
+import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.ProductController;
 import uz.mediasolutions.jurabeklabbackend.payload.req.ProductReqDTO;
-import uz.mediasolutions.jurabeklabbackend.service.admin.abs.AdminProductService;
+import uz.mediasolutions.jurabeklabbackend.service.admin.abs.ProductService;
 
-@RestController
+@RestController("adminProductController")
 @RequiredArgsConstructor
-public class AdminProductControllerImpl implements AdminProductController {
+public class ProductControllerImpl implements ProductController {
 
-    private final AdminProductService service;
+    private final ProductService service;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {

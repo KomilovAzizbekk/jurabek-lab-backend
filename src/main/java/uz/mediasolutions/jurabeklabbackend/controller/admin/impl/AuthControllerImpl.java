@@ -3,15 +3,15 @@ package uz.mediasolutions.jurabeklabbackend.controller.admin.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.AdminAuthController;
+import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.AuthController;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInAdminDTO;
-import uz.mediasolutions.jurabeklabbackend.service.admin.abs.AdminAuthService;
+import uz.mediasolutions.jurabeklabbackend.service.admin.abs.AuthService;
 
-@RestController
+@RestController("adminAuthController")
 @RequiredArgsConstructor
-public class AdminAuthControllerImpl implements AdminAuthController {
+public class AuthControllerImpl implements AuthController {
 
-    private final AdminAuthService service;
+    private final AuthService service;
 
     @Override
     public ResponseEntity<?> signIn(SignInAdminDTO dto) {

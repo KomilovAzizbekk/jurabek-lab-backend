@@ -24,7 +24,13 @@ public class Order extends AbsLongDef {
     @Column(precision = 12, scale = 2)
     private BigDecimal totalPrice;
 
+    private String pharmacyPhoneNumber;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pharmacy_id")
+    private Pharmacy pharmacy;
 
 }

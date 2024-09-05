@@ -3,7 +3,7 @@ package uz.mediasolutions.jurabeklabbackend.service.admin.abs;
 import org.springframework.http.ResponseEntity;
 import uz.mediasolutions.jurabeklabbackend.payload.req.ProductReqDTO;
 
-public interface AdminProductService {
+public interface ProductService {
 
     ResponseEntity<?> getAll(int page, int size, String search);
 

@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.ProductRepository;
-import uz.mediasolutions.jurabeklabbackend.service.user.abs.UserProductService;
+import uz.mediasolutions.jurabeklabbackend.service.user.abs.ProductService;
 
-@Service
+@Service("userProductService")
 @RequiredArgsConstructor
-public class UserProductServiceImpl implements UserProductService {
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 

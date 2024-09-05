@@ -12,7 +12,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "app/auth")
-public interface UserAuthController {
+public interface AuthController {
 
     @PostMapping("/sign-in")
     ResponseEntity<?> signIn(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String lang,

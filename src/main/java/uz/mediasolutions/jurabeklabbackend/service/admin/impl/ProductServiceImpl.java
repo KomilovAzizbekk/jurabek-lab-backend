@@ -11,16 +11,16 @@ import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.ProductReqDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.ProductRepository;
-import uz.mediasolutions.jurabeklabbackend.service.admin.abs.AdminProductService;
+import uz.mediasolutions.jurabeklabbackend.service.admin.abs.ProductService;
 import uz.mediasolutions.jurabeklabbackend.service.common.impl.FileServiceImpl;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.io.IOException;
 import java.util.Optional;
 
-@Service
+@Service("adminProductService")
 @RequiredArgsConstructor
-public class AdminProductServiceImpl implements AdminProductService {
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final FileServiceImpl fileService;

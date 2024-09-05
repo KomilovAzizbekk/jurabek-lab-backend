@@ -13,7 +13,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "app/products")
-public interface UserProductController {
+public interface ProductController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_USER')")

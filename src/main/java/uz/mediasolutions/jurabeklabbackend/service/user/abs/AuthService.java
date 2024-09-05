@@ -5,7 +5,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
 
-public interface UserAuthService {
+public interface AuthService {
 
     ResponseEntity<?> signIn(String lang, SignInDTO dto);
 

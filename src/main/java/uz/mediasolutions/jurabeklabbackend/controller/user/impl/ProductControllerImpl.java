@@ -3,14 +3,14 @@ package uz.mediasolutions.jurabeklabbackend.controller.user.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import uz.mediasolutions.jurabeklabbackend.controller.user.abs.UserProductController;
-import uz.mediasolutions.jurabeklabbackend.service.user.abs.UserProductService;
+import uz.mediasolutions.jurabeklabbackend.controller.user.abs.ProductController;
+import uz.mediasolutions.jurabeklabbackend.service.user.abs.ProductService;
 
-@RestController
+@RestController("userProductController")
 @RequiredArgsConstructor
-public class UserProductControllerImpl implements UserProductController {
+public class ProductControllerImpl implements ProductController {
 
-    private final UserProductService service;
+    private final ProductService service;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {

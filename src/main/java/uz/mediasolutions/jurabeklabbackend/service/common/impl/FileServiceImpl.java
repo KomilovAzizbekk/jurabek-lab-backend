@@ -94,8 +94,10 @@ public class FileServiceImpl implements FileService {
     }
 
     public void deleteFile(String imageUrl) throws IOException {
-        String imagePath = uploadDir + imageUrl.substring(imageUrl.lastIndexOf('/'));
-        Path path = Paths.get(imagePath);
-        Files.deleteIfExists(path);
+        if (imageUrl.contains("/")) {
+            String imagePath = uploadDir + imageUrl.substring(imageUrl.lastIndexOf('/'));
+            Path path = Paths.get(imagePath);
+            Files.deleteIfExists(path);
+        }
     }
 }

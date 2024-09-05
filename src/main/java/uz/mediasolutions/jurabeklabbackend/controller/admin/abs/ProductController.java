@@ -13,7 +13,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.ProductReqDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "admin/products")
-public interface AdminProductController {
+public interface ProductController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")

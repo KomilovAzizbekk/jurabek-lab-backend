@@ -13,11 +13,11 @@ import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.RefreshTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.secret.JwtService;
-import uz.mediasolutions.jurabeklabbackend.service.user.abs.UserAuthService;
+import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
 
-@Service
+@Service("userAuthService")
 @RequiredArgsConstructor
-public class UserAuthServiceImpl implements UserAuthService {
+public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
