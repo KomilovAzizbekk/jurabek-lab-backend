@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.service.common.abs.FileService;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -90,5 +91,11 @@ public class FileServiceImpl implements FileService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    public void deleteFile(String imageUrl) throws IOException {
+        String imagePath = uploadDir + imageUrl.substring(imageUrl.lastIndexOf('/'));
+        Path path = Paths.get(imagePath);
+        Files.deleteIfExists(path);
     }
 }

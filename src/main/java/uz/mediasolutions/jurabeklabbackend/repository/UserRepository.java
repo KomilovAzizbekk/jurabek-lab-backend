@@ -14,9 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Optional<User> findFirstByUsernameAndEnabledIsTrueAndAccountNonExpiredIsTrueAndAccountNonLockedIsTrueAndCredentialsNonExpiredIsTrue(String username);
-
-    Optional<User> findFirstByIdAndEnabledIsTrueAndAccountNonExpiredIsTrueAndAccountNonLockedIsTrueAndCredentialsNonExpiredIsTrue(UUID userId);
 
     boolean existsByPhoneNumber(String phoneNumber);
 
@@ -57,4 +54,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query(value = "SELECT u.created_at FROM users u WHERE u.id = :id", nativeQuery = true)
     Timestamp getCreatedTime(@Param("id") UUID id);
+
+    Optional<User> findByUsername(String username);
 }

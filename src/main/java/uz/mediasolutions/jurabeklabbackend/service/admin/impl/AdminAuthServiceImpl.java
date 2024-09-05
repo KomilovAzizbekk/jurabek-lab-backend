@@ -27,7 +27,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     public ResponseEntity<?> signIn(SignInAdminDTO dto) {
-        User user = userRepository.findFirstByUsernameAndEnabledIsTrueAndAccountNonExpiredIsTrueAndAccountNonLockedIsTrueAndCredentialsNonExpiredIsTrue(dto.getUsername())
+        User user = userRepository.findByUsername(dto.getUsername())
                 .orElseThrow(
                         () -> RestException.restThrow("Admin not found", HttpStatus.UNAUTHORIZED)
                 );

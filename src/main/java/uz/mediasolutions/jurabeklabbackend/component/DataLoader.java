@@ -33,10 +33,6 @@ public class DataLoader implements CommandLineRunner {
                 .role(RoleName.ROLE_SUPER_ADMIN)
                 .username("jurabek")
                 .password(passwordEncoder.encode("Qwerty123@"))
-                .accountNonExpired(true)
-                .accountNonLocked(true)
-                .enabled(true)
-                .credentialsNonExpired(true)
                 .build();
         userRepository.save(superAdmin);
     }

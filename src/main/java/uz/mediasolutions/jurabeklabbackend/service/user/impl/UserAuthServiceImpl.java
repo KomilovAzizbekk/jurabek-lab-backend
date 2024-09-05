@@ -30,10 +30,6 @@ public class UserAuthServiceImpl implements UserAuthService {
             if (!userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
                 User user = User.builder()
                         .phoneNumber(dto.getPhoneNumber())
-                        .accountNonExpired(true)
-                        .accountNonLocked(true)
-                        .credentialsNonExpired(true)
-                        .enabled(true)
                         .role(RoleName.ROLE_USER)
                         .registered(false)
                         .language(getLanguage(lang))

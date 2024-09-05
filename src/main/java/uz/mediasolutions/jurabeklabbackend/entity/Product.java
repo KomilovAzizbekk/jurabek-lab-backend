@@ -2,6 +2,7 @@ package uz.mediasolutions.jurabeklabbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import uz.mediasolutions.jurabeklabbackend.entity.template.AbsLongDef;
 
 import java.math.BigDecimal;
@@ -14,23 +15,14 @@ import java.math.BigDecimal;
 @Table(name = "products")
 @Builder
 @EqualsAndHashCode(callSuper = true)
+@DynamicUpdate
 public class Product extends AbsLongDef {
 
     private String name;
 
-    private String description;
-
     @Column(precision = 12, scale = 2)
     private BigDecimal price;
 
-    private Integer stock;
-
     private String imageUrl;
-
-    private Integer measurement;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "measurement_unit_id")
-    private MeasurementUnit measurementUnit;
 
 }

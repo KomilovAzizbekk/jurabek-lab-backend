@@ -51,10 +51,6 @@ public class UserServiceImpl implements UserService {
                     .username(dto.getUsername())
                     .password(passwordEncoder.encode(dto.getPassword()))
                     .role(RoleName.valueOf(dto.getRole()))
-                    .accountNonExpired(true)
-                    .accountNonLocked(true)
-                    .credentialsNonExpired(true)
-                    .enabled(true)
                     .build();
             userRepository.save(admin);
             return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
@@ -113,7 +109,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             userRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.DELETED);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
         } catch (Exception e) {
             throw RestException.restThrow(e.getMessage(), HttpStatus.CONFLICT);
         }
