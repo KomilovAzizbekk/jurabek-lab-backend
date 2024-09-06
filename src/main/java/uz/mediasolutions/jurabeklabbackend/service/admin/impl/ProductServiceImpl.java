@@ -71,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
         );
         try {
             fileService.deleteFile(product.getImageUrl());
-            productRepository.delete(product);
+            productRepository.deleteById(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
         } catch (Exception e) {
             throw RestException.restThrow("Delete failed", HttpStatus.INTERNAL_SERVER_ERROR);

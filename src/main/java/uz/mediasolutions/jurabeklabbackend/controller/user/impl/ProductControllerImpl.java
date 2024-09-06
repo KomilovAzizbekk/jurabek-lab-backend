@@ -1,6 +1,7 @@
 package uz.mediasolutions.jurabeklabbackend.controller.user.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uz.mediasolutions.jurabeklabbackend.controller.user.abs.ProductController;
@@ -15,5 +16,10 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {
         return service.getAll(page, size, search);
+    }
+
+    @Override
+    public ResponseEntity<Page<?>> getByOrderId(int page, int size, Long orderId) {
+        return service.getByOrderId(page, size, orderId);
     }
 }

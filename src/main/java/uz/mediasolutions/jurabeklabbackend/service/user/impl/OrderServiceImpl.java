@@ -2,6 +2,7 @@ package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.mediasolutions.jurabeklabbackend.entity.*;
 import uz.mediasolutions.jurabeklabbackend.enums.OrderStatus;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
+import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.OrderProductDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReqDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.OrderProductRepository;
@@ -33,12 +35,26 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResponseEntity<Page<?>> findAll(int page, int size, String status) {
-        return null;
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (user == null) {
+            throw RestException.restThrow("Couldn't recognize user", HttpStatus.UNAUTHORIZED);
+        }
+
+        Page<OrderDTO> orders = orderRepository.getAllByStatus(status, user.getId(), PageRequest.of(page, size));
+        return ResponseEntity.ok(orders);
     }
 
     @Override
     public ResponseEntity<?> getById(Long id) {
-        return null;
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (user == null) {
+            throw RestException.restThrow("Couldn't recognize user", HttpStatus.UNAUTHORIZED);
+        }
+
+        OrderDTO order = orderRepository.getOrdersById(id, user.getId());
+        return ResponseEntity.ok(order);
     }
 
     @Override

@@ -6,6 +6,7 @@ import uz.mediasolutions.jurabeklabbackend.entity.template.AbsLongDef;
 import uz.mediasolutions.jurabeklabbackend.enums.OrderStatus;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,5 +33,7 @@ public class Order extends AbsLongDef {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pharmacy_id")
     private Pharmacy pharmacy;
+
+    private Timestamp acceptedTime;
 
 }
