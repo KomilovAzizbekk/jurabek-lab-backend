@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.PharmacyController;
 import uz.mediasolutions.jurabeklabbackend.payload.req.PharmacyReqDTO;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.PharmacyService;
 
-@RestController
+@RestController("adminPharmacyController")
 @RequiredArgsConstructor
 public class PharmacyControllerImpl implements PharmacyController {
 
@@ -20,14 +21,19 @@ public class PharmacyControllerImpl implements PharmacyController {
     }
 
     @Override
-    public ResponseEntity<?> add(PharmacyReqDTO dto) {
-        return service.add(dto);
+    public ResponseEntity<?> addByFile(MultipartFile file) {
+        return service.addByFile(file);
     }
 
-    @Override
-    public ResponseEntity<?> edit(Long id, PharmacyReqDTO dto) {
-        return service.edit(id, dto);
-    }
+//    @Override
+//    public ResponseEntity<?> add(PharmacyReqDTO dto) {
+//        return service.add(dto);
+//    }
+//
+//    @Override
+//    public ResponseEntity<?> edit(Long id, PharmacyReqDTO dto) {
+//        return service.edit(id, dto);
+//    }
 
     @Override
     public ResponseEntity<?> delete(Long id) {

@@ -1,15 +1,9 @@
 package uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO;
 
-public interface PharmacyDTO {
+public interface DistrictDTO {
 
     Long getId();
 
     String getName();
-
-    String getAddress();
-
-    String getRegion();
-
-    String getDistrict();
 
 }
