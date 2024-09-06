@@ -11,16 +11,16 @@ import uz.mediasolutions.jurabeklabbackend.service.admin.abs.OrderService;
 @RequiredArgsConstructor
 public class OrderControllerImpl implements OrderController {
 
-    private final OrderService orderService;
+    private final OrderService service;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size) {
-        return null;
+        return service.getAll(page, size);
     }
 
     @Override
     public ResponseEntity<?> edit(Long id, OrderReqDTO dto) {
-        return null;
+        return service.edit(id, dto);
     }
 
 }
