@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-    User findByPhoneNumber(String phoneNumber);
+    Optional<User> findByPhoneNumber(String phoneNumber);
 
     @Query(value = "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END\n" +
             "FROM users u WHERE u.username = :username AND u.id != :id", nativeQuery = true)

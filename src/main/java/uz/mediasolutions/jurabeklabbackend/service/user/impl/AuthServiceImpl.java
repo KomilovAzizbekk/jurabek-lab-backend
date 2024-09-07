@@ -1,12 +1,14 @@
 package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.mediasolutions.jurabeklabbackend.entity.RefreshToken;
 import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
+import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
@@ -41,7 +43,9 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (dto.getOtp().equals("0000")) { //todo here should check otp
-            User user = userRepository.findByPhoneNumber(dto.getPhoneNumber());
+            User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+                    () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
+            );
             if (user.isRegistered()) {
                 return ResponseEntity.ok(getToken(user));
             } else {
@@ -53,7 +57,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<TokenDTO> signUp(String lang, SignUpDTO dto) {
-        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber());
+        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+                () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
+        );
         user.setRegistered(true);
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
