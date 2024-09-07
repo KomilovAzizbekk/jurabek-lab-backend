@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import uz.mediasolutions.jurabeklabbackend.entity.Order;
+import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Order2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderProductDTO;
 
 import java.util.UUID;
 
@@ -17,7 +19,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "       o.created_at            as createdTime,\n" +
             "       o.accepted_time         as acceptedTime,\n" +
             "       o.total_price           as totalPrice,\n" +
-            "       p.name,\n" +
+            "       p.name,                 as pharmacy\n" +
             "       o.pharmacy_phone_number as phoneNumber\n" +
             "FROM orders o\n" +
             "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
@@ -34,7 +36,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "       o.created_at            as createdTime,\n" +
             "       o.accepted_time         as acceptedTime,\n" +
             "       o.total_price           as totalPrice,\n" +
-            "       p.name,\n" +
+            "       p.name,                 as pharmacy\n" +
             "       o.pharmacy_phone_number as phoneNumber\n" +
             "FROM orders o\n" +
             "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
@@ -43,5 +45,31 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "ORDER BY o.created_at DESC", nativeQuery = true)
     OrderDTO getOrdersById(@Param("id") Long id,
                            @Param("userId") UUID userId);
+
+    @Query(value = "SELECT o.id,\n" +
+            "       o.status,\n" +
+            "       o.created_at            as createdTime,\n" +
+            "       o.total_price           as totalPrice,\n" +
+            "       p.name,\n" +
+            "       o.pharmacy_phone_number as phoneNumber\n" +
+            "FROM orders o\n" +
+            "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
+            "WHERE :status IS NULL\n" +
+            "   OR o.status = :status\n" +
+            "ORDER BY o.created_at DESC", nativeQuery = true)
+    Page<Order2DTO> getAllOrders(@Param("status") String status,
+                                 Pageable pageable);
+
+    @Query(value = "SELECT p.id,\n" +
+            "       p.name,\n" +
+            "       p.price,\n" +
+            "       p.image_url as imageUrl,\n" +
+            "       op.quantity\n" +
+            "FROM products p\n" +
+            "         LEFT JOIN order_products op ON op.product_id = p.id\n" +
+            "WHERE op.order_id = :orderId\n" +
+            "ORDER BY p.name", nativeQuery = true)
+    Page<OrderProductDTO> getOrderProducts(@Param("orderId") Long orderId,
+                                           Pageable pageable);
 
 }

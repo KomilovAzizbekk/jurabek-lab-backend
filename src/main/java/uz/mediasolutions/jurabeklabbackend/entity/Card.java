@@ -16,6 +16,8 @@ public class Card extends AbsUUID {
 
     private String number;
 
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;

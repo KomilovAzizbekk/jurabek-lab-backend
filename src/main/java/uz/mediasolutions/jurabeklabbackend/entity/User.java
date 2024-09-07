@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
 import uz.mediasolutions.jurabeklabbackend.entity.template.AbsUUID;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +40,8 @@ public class User extends AbsUUID implements UserDetails {
     private String username;
 
     private boolean registered;
+
+    private BigDecimal balance;
 
     @Enumerated(EnumType.STRING)
     private RoleName role;

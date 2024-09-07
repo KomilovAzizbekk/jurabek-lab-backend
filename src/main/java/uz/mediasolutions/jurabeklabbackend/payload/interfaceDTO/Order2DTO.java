@@ -3,15 +3,13 @@ package uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public interface OrderDTO {
+public interface Order2DTO {
 
     Long getId();
 
     String getStatus();
 
     Timestamp getCreatedTime();
-
-    Timestamp getAcceptedTime();
 
     BigDecimal getTotalPrice();
 
