@@ -3,8 +3,8 @@ package uz.mediasolutions.jurabeklabbackend.controller.admin.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.ProductController;
-import uz.mediasolutions.jurabeklabbackend.payload.req.ProductReqDTO;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.ProductService;
 
 @RestController("adminProductController")
@@ -19,13 +19,13 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public ResponseEntity<?> add(ProductReqDTO dto) {
-        return service.add(dto);
+    public ResponseEntity<?> add(MultipartFile file) {
+        return service.add(file);
     }
 
     @Override
-    public ResponseEntity<?> edit(Long id, ProductReqDTO dto) {
-        return service.edit(id, dto);
+    public ResponseEntity<?> editImage(Long id, String imageUrl) {
+        return service.editImage(id, imageUrl);
     }
 
     @Override

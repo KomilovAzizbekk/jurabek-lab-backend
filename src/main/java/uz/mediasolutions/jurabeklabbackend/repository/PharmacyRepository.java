@@ -10,10 +10,11 @@ import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Pharmacy2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.PharmacyDTO;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
 
-    boolean existsById(Long id);
+    boolean existsByIdAndDeletedFalse(Long id);
 
     @Query(value = "SELECT p.id,\n" +
             "       p.name,\n" +
@@ -27,17 +28,21 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
             "    OR p.address ILIKE '%' || :search || '%'\n" +
             "    OR d.name ILIKE '%' || :search || '%'\n" +
             "    OR r.name ILIKE '%' || :search || '%')\n" +
+            "  AND p.deleted = false\n" +
             "ORDER BY p.name", nativeQuery = true)
     Page<PharmacyDTO> findAllWithSearch(Pageable pageable,
                                         @Param("search") String search);
 
-    boolean existsByName(String name);
+    boolean existsByNameAndDeletedFalse(String name);
 
     @Query(value = "SELECT p.id,\n" +
             "       p.name\n" +
             "FROM pharmacies p\n" +
             "WHERE p.district_id = :districtId\n" +
+            "  AND p.deleted = false\n" +
             "ORDER BY p.name", nativeQuery = true)
     List<Pharmacy2DTO> findAllByDistrictId(@Param("districtId") Long districtId);
+
+    Optional<Pharmacy> findByIdAndDeletedFalse(Long id);
 
 }

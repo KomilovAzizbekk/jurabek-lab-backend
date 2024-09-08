@@ -7,24 +7,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.mediasolutions.jurabeklabbackend.entity.Order;
-import uz.mediasolutions.jurabeklabbackend.entity.Transaction;
-import uz.mediasolutions.jurabeklabbackend.entity.User;
+import uz.mediasolutions.jurabeklabbackend.entity.*;
 import uz.mediasolutions.jurabeklabbackend.enums.OrderStatus;
 import uz.mediasolutions.jurabeklabbackend.enums.TransactionStatus;
 import uz.mediasolutions.jurabeklabbackend.enums.TransactionType;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Order2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderProductDTO;
-import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReqDTO;
-import uz.mediasolutions.jurabeklabbackend.repository.OrderRepository;
-import uz.mediasolutions.jurabeklabbackend.repository.TransactionRepository;
-import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
+import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReq2DTO;
+import uz.mediasolutions.jurabeklabbackend.repository.*;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.OrderService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service("adminOrderService")
 @RequiredArgsConstructor
@@ -33,6 +32,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String status) {
@@ -41,8 +42,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseEntity<?> edit(Long id, OrderReqDTO dto) {
-        return null;
+    @Transactional
+    public ResponseEntity<?> edit(Long id, OrderReq2DTO dto) {
+        Order order = orderRepository.findById(id).orElseThrow(
+                () -> RestException.restThrow("Order not found", HttpStatus.NOT_FOUND)
+        );
+        Optional.ofNullable(dto.getPharmacyPhoneNumber()).ifPresent(order::setPharmacyPhoneNumber);
+        orderRepository.save(order);
+
+        List<OrderProduct> orderProducts = new ArrayList<>();
+
+        for (uz.mediasolutions.jurabeklabbackend.payload.req.OrderProductDTO product : dto.getProducts()) {
+            OrderProduct orderProduct = orderProductRepository.findByOrderId(id).orElseThrow(
+                    () -> RestException.restThrow("Order Product not found", HttpStatus.NOT_FOUND)
+            );
+
+            Optional.ofNullable(product.getProductId()).ifPresent(productId -> {
+                Product product1 = productRepository.findByIdAndDeletedFalse(productId).orElseThrow(
+                        () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
+                );
+                orderProduct.setProduct(product1);
+            });
+            Optional.ofNullable(product.getQuantity()).ifPresent(orderProduct::setQuantity);
+            orderProducts.add(orderProduct);
+        }
+        orderProductRepository.saveAll(orderProducts);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
 
     @Override

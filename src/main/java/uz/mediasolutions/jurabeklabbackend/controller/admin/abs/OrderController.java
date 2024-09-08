@@ -10,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Order2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderProductDTO;
-import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReqDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReq2DTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "admin/orders")
@@ -38,10 +38,10 @@ public interface OrderController {
                                            @RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
                                            @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size);
 
-    @PatchMapping("/edit/{id}")
+    @PutMapping("/edit/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     ResponseEntity<?> edit(@PathVariable Long id,
-                           @RequestBody OrderReqDTO dto);
+                           @RequestBody OrderReq2DTO dto);
 
     @PatchMapping("/accept/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")

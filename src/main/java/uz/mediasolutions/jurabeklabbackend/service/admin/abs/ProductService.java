@@ -1,15 +1,15 @@
 package uz.mediasolutions.jurabeklabbackend.service.admin.abs;
 
 import org.springframework.http.ResponseEntity;
-import uz.mediasolutions.jurabeklabbackend.payload.req.ProductReqDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
     ResponseEntity<?> getAll(int page, int size, String search);
 
-    ResponseEntity<?> add(ProductReqDTO dto);
-
-    ResponseEntity<?> edit(Long id, ProductReqDTO dto);
+    ResponseEntity<?> add(MultipartFile file);
 
     ResponseEntity<?> delete(Long id);
+
+    ResponseEntity<?> editImage(Long id, String imageUrl);
 }

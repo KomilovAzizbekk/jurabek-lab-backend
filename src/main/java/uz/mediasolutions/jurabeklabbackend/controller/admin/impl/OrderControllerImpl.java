@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.OrderController;
-import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReqDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReq2DTO;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.OrderService;
 
 @RestController("adminOrderController")
@@ -25,7 +25,7 @@ public class OrderControllerImpl implements OrderController {
     }
 
     @Override
-    public ResponseEntity<?> edit(Long id, OrderReqDTO dto) {
+    public ResponseEntity<?> edit(Long id, OrderReq2DTO dto) {
         return service.edit(id, dto);
     }
 

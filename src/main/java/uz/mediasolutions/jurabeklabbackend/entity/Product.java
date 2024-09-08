@@ -25,4 +25,6 @@ public class Product extends AbsLongDef {
 
     private String imageUrl;
 
+    boolean deleted = false;
+
 }

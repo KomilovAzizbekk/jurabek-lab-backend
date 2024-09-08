@@ -17,20 +17,12 @@ import java.util.List;
 @Builder
 public class OrderReq2DTO {
 
-    @NotNull
-    private Long pharmacyId;
-
     @NotBlank
     @Pattern(regexp = Rest.PHONE_NUMBER_REGEX)
     private String pharmacyPhoneNumber;
 
-    private String status;
-
+    @NotNull
     @Valid
-    @NotNull
     private List<OrderProductDTO> products;
-
-    @NotNull
-    private BigDecimal totalPrice;
 
 }

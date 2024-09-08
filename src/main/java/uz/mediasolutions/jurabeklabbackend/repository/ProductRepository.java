@@ -9,6 +9,9 @@ import uz.mediasolutions.jurabeklabbackend.entity.Product;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Product2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(value = "SELECT p.id,\n" +
@@ -17,6 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "       p.image_url as imageUrl\n" +
             "           FROM products p\n" +
             "WHERE (:search IS NULL OR p.name ILIKE '%' || :search || '%')\n" +
+            "   AND p.deleted = false\n" +
             "ORDER BY p.created_at DESC", nativeQuery = true)
     Page<ProductDTO> findAllWithSearch(@Param("search") String search,
                                        Pageable pageable);
@@ -32,5 +36,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "WHERE op.order_id = :orderId", nativeQuery = true)
     Page<Product2DTO> findAllByOrderId(@Param("orderId") Long orderId,
                                        Pageable pageable);
+
+    boolean existsByNameAndDeletedFalse(String name);
+
+    @Query(value = "UPDATE products SET price = :price WHERE name = :name AND deleted = false", nativeQuery = true)
+    Product setPriceByName(@Param("name") String name,
+                           @Param("price") BigDecimal price);
+
+    Optional<Product> findByIdAndDeletedFalse(Long id);
+
+    Product findByNameAndDeletedFalse(String name);
 
 }

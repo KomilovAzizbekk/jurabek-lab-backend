@@ -19,14 +19,14 @@ public class CorsConfig implements Filter {
                                  FilterChain filterChain) throws IOException, ServletException {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
+        response.setHeader("Access-Control-Allow-Methods", "POST, PATCH, PUT, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with, x-auth-token, token");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         if (!(request.getMethod().equalsIgnoreCase("OPTIONS"))) {
             filterChain.doFilter(request, response);
         } else {
-            response.setHeader("Access-Control-Allowed-Methods", "POST, GET, DELETE");
+            response.setHeader("Access-Control-Allow-Methods", "POST, PUT, PATCH, GET, DELETE");
             response.setHeader("Access-Control-Max-Age", "3600");
             response.setHeader("Access-Control-Allow-Headers", "authorization, content-type,x-auth-token, " + "access-control-request-headers, access-control-request-method, accept, origin, token, authorization, x-requested-with,Accountcode");
 

@@ -5,11 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import uz.mediasolutions.jurabeklabbackend.entity.template.AbsLongDef;
-import uz.mediasolutions.jurabeklabbackend.enums.OrderStatus;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,8 +28,6 @@ public class Pharmacy extends AbsLongDef {
     @JoinColumn(name = "district_id")
     private District district;
 
-    @OneToMany(mappedBy = "pharmacy", cascade = CascadeType.ALL, orphanRemoval = true)
-    @ToString.Exclude
-    private Set<Order> orders;
+    boolean deleted = false;
 
 }

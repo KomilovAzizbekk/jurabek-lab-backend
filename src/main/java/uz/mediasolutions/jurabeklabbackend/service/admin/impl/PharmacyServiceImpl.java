@@ -49,10 +49,10 @@ public class PharmacyServiceImpl implements PharmacyService {
         }
         try {
             saveDataFromExcel(file.getInputStream());
+            return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
         } catch (Exception e) {
             throw RestException.restThrow("Excel file could not be read!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
     }
 
 
@@ -95,14 +95,16 @@ public class PharmacyServiceImpl implements PharmacyService {
                     String address = getCellValue(row, 3);
                     String name = getCellValue(row, 4);
 
-                    Pharmacy pharmacy = Pharmacy.builder()
-                            .name(name)
-                            .district(savedDistrict)
-                            .address(address)
-                            .build();
+                    if (!pharmacyRepository.existsByNameAndDeletedFalse(name)) {
+                        Pharmacy pharmacy = Pharmacy.builder()
+                                .name(name)
+                                .district(savedDistrict)
+                                .address(address)
+                                .deleted(false)
+                                .build();
 
-                    pharmacies.add(pharmacy);
-
+                        pharmacies.add(pharmacy);
+                    }
                 }
             }
 
@@ -144,12 +146,13 @@ public class PharmacyServiceImpl implements PharmacyService {
 //
     @Override
     public ResponseEntity<?> delete(Long id) {
-        if (!pharmacyRepository.existsById(id)) {
-            throw RestException.restThrow("Pharmacy not found", HttpStatus.NOT_FOUND);
-        }
+        Pharmacy pharmacy = pharmacyRepository.findByIdAndDeletedFalse(id).orElseThrow(
+                () -> RestException.restThrow("Pharmacy not found", HttpStatus.NOT_FOUND)
+        );
 
         try {
-            pharmacyRepository.deleteById(id);
+            pharmacy.setDeleted(true);
+            pharmacyRepository.save(pharmacy);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
         } catch (Exception e) {
             throw RestException.restThrow("Delete failed", HttpStatus.INTERNAL_SERVER_ERROR);

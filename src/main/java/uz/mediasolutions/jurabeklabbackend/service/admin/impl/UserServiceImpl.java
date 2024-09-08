@@ -46,6 +46,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw RestException.restThrow("Admin already exists with this username", HttpStatus.CONFLICT);
         }
+        if (dto.getRole().equals(RoleName.ROLE_USER.name())) {
+            throw RestException.restThrow("You cannot create a user", HttpStatus.BAD_REQUEST);
+        }
         try {
             User admin = User.builder()
                     .username(dto.getUsername())

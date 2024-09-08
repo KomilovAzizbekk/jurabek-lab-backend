@@ -8,8 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
-import uz.mediasolutions.jurabeklabbackend.payload.req.ProductReqDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "admin/products")
@@ -26,14 +26,13 @@ public interface ProductController {
                              @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
                              @RequestParam(defaultValue = "") String search);
 
-    @PostMapping("/add")
+    @PostMapping("/add-by-file")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
-    ResponseEntity<?> add(@RequestBody @Valid ProductReqDTO dto);
+    ResponseEntity<?> add(@RequestParam("file") MultipartFile file);
 
-    @PatchMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
-    ResponseEntity<?> edit(@PathVariable Long id,
-                           @RequestBody ProductReqDTO dto);
+    @PatchMapping("/edit-image/{id}")
+    ResponseEntity<?> editImage(@PathVariable("id") Long id,
+                                @RequestBody @Valid String imageUrl);
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
