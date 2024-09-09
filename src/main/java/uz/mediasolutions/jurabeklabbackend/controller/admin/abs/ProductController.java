@@ -26,7 +26,7 @@ public interface ProductController {
                              @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
                              @RequestParam(defaultValue = "") String search);
 
-    @PostMapping("/add-by-file")
+    @PostMapping(value = "/add-by-file", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     ResponseEntity<?> add(@RequestParam("file") MultipartFile file);
 
