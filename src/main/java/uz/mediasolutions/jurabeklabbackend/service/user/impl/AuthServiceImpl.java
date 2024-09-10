@@ -12,6 +12,7 @@ import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.RefreshTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.secret.JwtService;
@@ -47,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
                     () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
             );
             if (user.isRegistered()) {
-                return ResponseEntity.ok(getToken(user));
+                return ResponseEntity.ok(getTokenForUser(user));
             } else {
                 return ResponseEntity.ok("Go to sign up");
             }
@@ -56,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<TokenDTO> signUp(String lang, SignUpDTO dto) {
+    public ResponseEntity<TokenUserDTO> signUp(String lang, SignUpDTO dto) {
         User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
                 () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
         );
@@ -64,10 +65,10 @@ public class AuthServiceImpl implements AuthService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         userRepository.save(user);
-        return ResponseEntity.ok(getToken(user));
+        return ResponseEntity.ok(getTokenForUser(user));
     }
 
-    private TokenDTO getToken(User user) {
+    private TokenUserDTO getTokenForUser(User user) {
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
@@ -86,13 +87,14 @@ public class AuthServiceImpl implements AuthService {
         }
         refreshTokenRepository.save(token);
 
-        return new TokenDTO("Bearer", accessToken, refreshToken);
+        return new TokenUserDTO("Bearer", accessToken, refreshToken, user.getId(),
+                user.getPhoneNumber(), user.getFirstName(), user.getLastName(), user.getRole().name());
     }
 
     private String getLanguage(String lang) {
         return switch (lang) {
             case "ru" -> "ru";
-            case "уз" -> "уз";
+            case "kr" -> "kr";
             default -> "uz";
         };
     }

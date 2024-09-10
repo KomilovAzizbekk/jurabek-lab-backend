@@ -7,6 +7,7 @@ import uz.mediasolutions.jurabeklabbackend.controller.user.abs.AuthController;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
 
 @RestController("userAuthController")
@@ -21,7 +22,7 @@ public class AuthControllerImpl implements AuthController {
     }
 
     @Override
-    public ResponseEntity<TokenDTO> signUp(String lang, SignUpDTO dto) {
+    public ResponseEntity<TokenUserDTO> signUp(String lang, SignUpDTO dto) {
         return service.signUp(lang, dto);
     }
 }

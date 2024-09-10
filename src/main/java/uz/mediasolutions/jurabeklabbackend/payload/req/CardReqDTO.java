@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class CardDTO {
+public class CardReqDTO {
 
     @NotBlank
     private String cardNumber;
