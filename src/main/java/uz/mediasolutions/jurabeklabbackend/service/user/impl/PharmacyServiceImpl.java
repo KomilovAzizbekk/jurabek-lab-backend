@@ -34,8 +34,8 @@ public class PharmacyServiceImpl implements PharmacyService {
     }
 
     @Override
-    public ResponseEntity<List<?>> getAllPharmacies(Long districtId) {
-        List<Pharmacy2DTO> pharmacies = pharmacyRepository.findAllByDistrictId(districtId);
+    public ResponseEntity<List<?>> getAllPharmacies(Long districtId, String search) {
+        List<Pharmacy2DTO> pharmacies = pharmacyRepository.findAllByDistrictId(districtId, search);
         return ResponseEntity.ok(pharmacies);
     }
 }

@@ -1,6 +1,7 @@
 package uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 public interface TransactionHistoryDTO {
 
@@ -12,6 +13,8 @@ public interface TransactionHistoryDTO {
 
     String getCard();
 
+    String getPharmacy();
 
+    Timestamp getUpdatedTime();
 
 }

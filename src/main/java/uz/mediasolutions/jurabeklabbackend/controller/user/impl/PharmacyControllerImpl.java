@@ -26,7 +26,7 @@ public class PharmacyControllerImpl implements PharmacyController {
     }
 
     @Override
-    public ResponseEntity<List<?>> getAllPharmacies(Long districtId) {
-        return service.getAllPharmacies(districtId);
+    public ResponseEntity<List<?>> getAllPharmacies(Long districtId, String search) {
+        return service.getAllPharmacies(districtId, search);
     }
 }

@@ -11,5 +11,5 @@ public interface PharmacyService {
 
     ResponseEntity<List<?>> getAllDistricts(Long regionId);
 
-    ResponseEntity<List<?>> getAllPharmacies(Long districtId);
+    ResponseEntity<List<?>> getAllPharmacies(Long districtId, String search);
 }

@@ -40,8 +40,10 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
             "FROM pharmacies p\n" +
             "WHERE p.district_id = :districtId\n" +
             "  AND p.deleted = false\n" +
+            "  AND (:search IS NULL OR p.name ILIKE '%' || :search || '%')\n" +
             "ORDER BY p.name", nativeQuery = true)
-    List<Pharmacy2DTO> findAllByDistrictId(@Param("districtId") Long districtId);
+    List<Pharmacy2DTO> findAllByDistrictId(@Param("districtId") Long districtId,
+                                           @Param("search") String search);
 
     Optional<Pharmacy> findByIdAndDeletedFalse(Long id);
 

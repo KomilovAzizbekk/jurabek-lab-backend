@@ -11,7 +11,7 @@ import uz.mediasolutions.jurabeklabbackend.service.user.abs.TransactionService;
 
 import java.util.List;
 
-@RestController
+@RestController("userTransactionController")
 @RequiredArgsConstructor
 public class TransactionControllerImpl implements TransactionController {
 

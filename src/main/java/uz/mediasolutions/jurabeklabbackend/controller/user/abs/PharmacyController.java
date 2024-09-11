@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import uz.mediasolutions.jurabeklabbackend.entity.Region;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.DistrictDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Pharmacy2DTO;
@@ -39,6 +40,7 @@ public interface PharmacyController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Pharmacy2DTO.class))})
     })
-    ResponseEntity<List<?>> getAllPharmacies(@PathVariable Long districtId);
+    ResponseEntity<List<?>> getAllPharmacies(@PathVariable Long districtId,
+                                             @RequestParam(defaultValue = "") String search);
 
 }

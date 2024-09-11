@@ -2,6 +2,7 @@ package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import uz.mediasolutions.jurabeklabbackend.enums.TransactionType;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.CardDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.InfoDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.TransactionHistoryDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.CardReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.WithdrawReqDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.CardRepository;
@@ -23,7 +25,7 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.util.List;
 
-@Service
+@Service("userTransactionService")
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
@@ -47,8 +49,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<Page<?>> getHistory(int page, int size, String type) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        return null;
+        Page<TransactionHistoryDTO> transactionHistory = transactionRepository.getTransactionHistory(user.getId(), type, PageRequest.of(page, size));
+        return ResponseEntity.ok(transactionHistory);
     }
 
     @Override

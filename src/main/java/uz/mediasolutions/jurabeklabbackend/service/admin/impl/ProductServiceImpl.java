@@ -1,6 +1,7 @@
 package uz.mediasolutions.jurabeklabbackend.service.admin.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -90,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     protected void saveDataFromExcel(InputStream is) {
         try {
-            Workbook workbook = new XSSFWorkbook(is);
+            Workbook workbook = new HSSFWorkbook(is);
             Sheet sheet = workbook.getSheetAt(0);
 
             List<Product> products = new ArrayList<>();
@@ -107,7 +108,8 @@ public class ProductServiceImpl implements ProductService {
 
                     price = price.replaceAll(",", "");
 
-                    BigDecimal newPrice = BigDecimal.valueOf(Long.parseLong(price)).multiply(BigDecimal.valueOf(1.2));
+                    BigDecimal newPrice = new BigDecimal(price).multiply(new BigDecimal("1.2"));
+
                     if (!name.isEmpty() && !productRepository.existsByNameAndDeletedFalse(name)) {
                         Product product = Product.builder()
                                 .price(newPrice)
