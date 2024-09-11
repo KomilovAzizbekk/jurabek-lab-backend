@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,10 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Service("adminProductService")
 @RequiredArgsConstructor
@@ -33,6 +38,9 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final FileServiceImpl fileService;
+
+    // Parallel qayta ishlash uchun oqimlar sonini belgilash (4 ta oqim)
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {
@@ -91,52 +99,78 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     protected void saveDataFromExcel(InputStream is) {
         try {
-            Workbook workbook = new HSSFWorkbook(is);
+            Workbook workbook = new HSSFWorkbook(is); // Streaming uchun SXSSFWorkbook
             Sheet sheet = workbook.getSheetAt(0);
 
-            List<Product> products = new ArrayList<>();
+            // Parallel ishlash uchun natijalarni yig'ish
+            List<Future<List<Product>>> futures = new ArrayList<>();
 
             for (Row row : sheet) {
                 if (row.getRowNum() != 0) {
-
-                    String name = getCellValue(row, 1);
-                    String price = getCellValue(row, 4);
-
-                    if (price.isEmpty()) {
-                        price = "0";
-                    }
-
-                    price = price.replaceAll(",", "");
-
-                    BigDecimal newPrice = new BigDecimal(price).multiply(new BigDecimal("1.2"));
-
-                    if (!name.isEmpty() && !productRepository.existsByNameAndDeletedFalse(name)) {
-                        Product product = Product.builder()
-                                .price(newPrice)
-                                .name(name)
-                                .deleted(false)
-                                .build();
-
-                        products.add(product);
-                    } else if (productRepository.existsByNameAndDeletedFalse(name)) {
-                        Product product = productRepository.findByNameAndDeletedFalse(name);
-                        product.setPrice(newPrice);
-                        products.add(product);
-                    }
+                    // Har bir qatorni parallel ravishda qayta ishlaymiz
+                    Future<List<Product>> future = executorService.submit(() -> processRow(row));
+                    futures.add(future);
                 }
             }
-            productRepository.saveAll(products);
+
+            // Barcha natijalarni parallel jarayondan yig'ib olish
+            List<Product> allProducts = new ArrayList<>();
+            for (Future<List<Product>> future : futures) {
+                allProducts.addAll(future.get());
+            }
+
+            // Batch Insert yordamida barcha mahsulotlarni saqlash
+            productRepository.saveAll(allProducts);
 
         } catch (Exception e) {
             throw RestException.restThrow("Excel file could not be read", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    // Har bir qatorni qayta ishlash
+    private List<Product> processRow(Row row) {
+        List<Product> products = new ArrayList<>();
+
+        String name = getCellValue(row, 1);
+        String price = getCellValue(row, 4);
+
+        // Narx bo'sh bo'lsa 0 ga o'zgartirish
+        if (price.isEmpty()) {
+            price = "0";
+        }
+
+        price = price.replaceAll(",", "");
+
+        // Narxni ko'paytirish
+        BigDecimal newPrice = new BigDecimal(price).multiply(new BigDecimal("1.2"));
+
+        if (!name.isEmpty()) {
+            Optional<Product> existingProductOpt = productRepository.findByNameAndDeletedFalse(name);
+
+            if (existingProductOpt.isPresent()) {
+                // Mahsulot mavjud bo'lsa, narxni yangilash
+                Product existingProduct = existingProductOpt.get();
+                existingProduct.setPrice(newPrice);
+                products.add(existingProduct);
+            } else {
+                // Mahsulot mavjud bo'lmasa, yangi mahsulot yaratish
+                Product product = Product.builder()
+                        .price(newPrice)
+                        .name(name)
+                        .deleted(false)
+                        .build();
+                products.add(product);
+            }
+        }
+
+        return products;
+    }
+
     private String getCellValue(Row row, int columnIndex) {
         Cell cell = row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
         if (cell != null) {
-            return cell.toString(); // Bu yerda turli xil formatlarni tekshirish va ularni qayta ishlash zarur bo'lishi mumkin
+            return cell.toString();
         }
-        return ""; // Agar cell mavjud bo'lmasa, bo'sh string qaytarish
+        return "";
     }
 }

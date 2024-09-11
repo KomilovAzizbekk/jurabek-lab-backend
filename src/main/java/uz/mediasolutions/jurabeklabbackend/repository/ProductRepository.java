@@ -45,6 +45,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findByIdAndDeletedFalse(Long id);
 
-    Product findByNameAndDeletedFalse(String name);
-
+    Optional<Product> findByNameAndDeletedFalse(String name);
 }
