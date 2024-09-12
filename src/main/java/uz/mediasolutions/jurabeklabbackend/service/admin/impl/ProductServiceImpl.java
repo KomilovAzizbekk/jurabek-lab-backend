@@ -38,9 +38,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final FileServiceImpl fileService;
 
-    // Parallel qayta ishlash uchun oqimlar sonini belgilash (4 ta oqim)
-    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
-
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {
         Page<ProductDTO> allProducts = productRepository.findAllWithSearch(search, PageRequest.of(page, size));
@@ -48,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-//    @Transactional(noRollbackFor = DataIntegrityViolationException.class)
+    @Transactional
     public ResponseEntity<?> add(MultipartFile file) {
         if (file.isEmpty()) {
             throw RestException.restThrow("File cannot be empty", HttpStatus.BAD_REQUEST);
@@ -95,44 +92,40 @@ public class ProductServiceImpl implements ProductService {
         throw RestException.restThrow("Image not found", HttpStatus.NOT_FOUND);
     }
 
-//    @Transactional(noRollbackFor = DataIntegrityViolationException.class)
+
     protected void saveDataFromExcel(InputStream is) {
         try {
             Workbook workbook = new HSSFWorkbook(is);
             Sheet sheet = workbook.getSheetAt(0);
 
-            // Parallel ishlash uchun natijalarni yig'ish
-            List<Future<List<Product>>> futures = new ArrayList<>();
+            Set<String> processedProducts = new HashSet<>();
+            List<Product> productsToSave = new ArrayList<>();
 
             for (Row row : sheet) {
                 if (row.getRowNum() != 0) {
-                    // Har bir qatorni parallel ravishda qayta ishlaymiz
-                    Future<List<Product>> future = executorService.submit(() -> processRow(row));
-                    futures.add(future);
+                    String name = getCellValue(row, 1);
+
+                    if (!processedProducts.contains(name) && !productRepository.existsByNameAndDeletedFalse(name)) {
+                        processedProducts.add(name);
+                        Product product = processRow(row);
+                        if (product != null) {
+                            productsToSave.add(product);
+                        }
+                    }
                 }
             }
 
-            // Barcha natijalarni parallel jarayondan yig'ib olish
-            List<Product> allProducts = new ArrayList<>();
-            for (Future<List<Product>> future : futures) {
-                allProducts.addAll(future.get());
+            if (!productsToSave.isEmpty()) {
+                productRepository.saveAll(productsToSave);
             }
 
-            try {
-                // Batch Insert yordamida barcha mahsulotlarni saqlash
-                productRepository.saveAll(allProducts);
-            } catch (DataIntegrityViolationException e) {
-                System.out.println("Duplicate entry found for one of the products");
-            }
         } catch (Exception e) {
             throw RestException.restThrow(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     // Har bir qatorni qayta ishlash
-    private List<Product> processRow(Row row) {
-        List<Product> products = new ArrayList<>();
-
+    private Product processRow(Row row) {
         String name = getCellValue(row, 1);
         String price = getCellValue(row, 4);
 
@@ -152,18 +145,17 @@ public class ProductServiceImpl implements ProductService {
                 // Mahsulot mavjud bo'lsa, narxni yangilash
                 Product existingProduct = existingProductOpt.get();
                 existingProduct.setPrice(newPrice);
-                products.add(existingProduct);
+                return existingProduct;
             } else {
                 // Mahsulot mavjud bo'lmasa, yangi mahsulot yaratish
-                Product product = Product.builder()
+                return Product.builder()
                         .price(newPrice)
                         .name(name)
                         .deleted(false)
                         .build();
-                products.add(product);
             }
         }
-        return products;
+        return null;
     }
 
     private String getCellValue(Row row, int columnIndex) {

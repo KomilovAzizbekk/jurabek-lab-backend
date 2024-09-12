@@ -45,8 +45,6 @@ public class PharmacyServiceImpl implements PharmacyService {
     private final Map<String, Region> regionCache = new HashMap<>();
     private final Map<String, District> districtCache = new HashMap<>();
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(4); // 4 ta oqim uchun
-
     @Override
     public ResponseEntity<Page<?>> getAll(int page, int size, String search) {
         Page<PharmacyDTO> pharmacyDTOS = pharmacyRepository.findAllWithSearch(PageRequest.of(page, size), search);
@@ -54,6 +52,7 @@ public class PharmacyServiceImpl implements PharmacyService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<?> addByFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw RestException.restThrow("File cannot be empty", HttpStatus.BAD_REQUEST);
@@ -69,8 +68,7 @@ public class PharmacyServiceImpl implements PharmacyService {
 
     public void saveDataFromExcel(InputStream is) {
         try {
-            // Excel faylni streaming yordamida o'qish
-            Workbook workbook = new SXSSFWorkbook(new XSSFWorkbook(is));
+            Workbook workbook = new XSSFWorkbook(is);
             Sheet sheet = workbook.getSheetAt(0);
 
             Set<String> processedNames = new HashSet<>();  // Excel va bazadagi name'larni to'plovchi Set

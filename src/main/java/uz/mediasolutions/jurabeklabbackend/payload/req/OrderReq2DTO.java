@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @AllArgsConstructor
@@ -17,6 +16,7 @@ import java.util.List;
 @Builder
 public class OrderReq2DTO {
 
+    @NotNull
     @NotBlank
     @Pattern(regexp = Rest.PHONE_NUMBER_REGEX)
     private String pharmacyPhoneNumber;

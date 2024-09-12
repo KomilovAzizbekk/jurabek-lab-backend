@@ -1,6 +1,6 @@
 package uz.mediasolutions.jurabeklabbackend.payload.req;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
@@ -10,13 +10,13 @@ import lombok.*;
 @Builder
 public class AdminReqDTO {
 
-    @NotBlank
+    @NotNull
     private String role;
 
-    @NotBlank
+    @NotNull
     private String username;
 
-    @NotBlank
+    @NotNull
     private String password;
 
 }

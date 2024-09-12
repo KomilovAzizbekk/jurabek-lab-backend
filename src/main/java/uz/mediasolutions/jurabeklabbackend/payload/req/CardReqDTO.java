@@ -1,6 +1,6 @@
 package uz.mediasolutions.jurabeklabbackend.payload.req;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 public class CardReqDTO {
 
-    @NotBlank
+    @NotNull
     private String cardNumber;
 
     private String name;

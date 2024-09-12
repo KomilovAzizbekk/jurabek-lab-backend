@@ -20,9 +20,11 @@ public class SignUpDTO {
     @Pattern(regexp = Rest.PHONE_NUMBER_REGEX, message = "phone number format error")
     private String phoneNumber;
 
+    @NotNull
     @NotBlank(message = "enter first name")
     private String firstName;
 
+    @NotNull
     @NotBlank(message = "enter first name")
     private String lastName;
 

@@ -11,4 +11,6 @@ public interface AuthService {
 
     ResponseEntity<TokenUserDTO> signUp(String lang, SignUpDTO dto);
 
+    ResponseEntity<?> logout();
+
 }

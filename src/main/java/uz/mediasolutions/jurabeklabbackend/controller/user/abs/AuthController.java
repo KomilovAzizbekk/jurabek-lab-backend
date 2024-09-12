@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
-import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
@@ -22,5 +21,8 @@ public interface AuthController {
     @PostMapping("/sign-up")
     ResponseEntity<TokenUserDTO> signUp(@RequestHeader(name = "Accept-Language", defaultValue = "uz") String lang,
                                         @RequestBody @Valid SignUpDTO dto);
+
+    @PostMapping("/logout")
+    ResponseEntity<?> logout();
 
 }

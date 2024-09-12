@@ -3,6 +3,7 @@ package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.mediasolutions.jurabeklabbackend.entity.RefreshToken;
@@ -17,6 +18,7 @@ import uz.mediasolutions.jurabeklabbackend.repository.RefreshTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.secret.JwtService;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
+import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @Service("userAuthService")
 @RequiredArgsConstructor
@@ -66,6 +68,22 @@ public class AuthServiceImpl implements AuthService {
         user.setLastName(dto.getLastName());
         userRepository.save(user);
         return ResponseEntity.ok(getTokenForUser(user));
+    }
+
+    @Override
+    public ResponseEntity<?> logout() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (user == null) {
+            throw RestException.restThrow("User not found", HttpStatus.NOT_FOUND);
+        }
+        try {
+            RefreshToken token = refreshTokenRepository.findByUserId(user.getId());
+            refreshTokenRepository.deleteById(token.getId());
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Rest.ERROR);
+        }
     }
 
     private TokenUserDTO getTokenForUser(User user) {

@@ -20,6 +20,7 @@ public class OrderReqDTO {
     @NotNull
     private Long pharmacyId;
 
+    @NotNull
     @NotBlank
     @Pattern(regexp = Rest.PHONE_NUMBER_REGEX)
     private String pharmacyPhoneNumber;
