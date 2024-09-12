@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,7 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -49,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    @Transactional
+//    @Transactional(noRollbackFor = DataIntegrityViolationException.class)
     public ResponseEntity<?> add(MultipartFile file) {
         if (file.isEmpty()) {
             throw RestException.restThrow("File cannot be empty", HttpStatus.BAD_REQUEST);
@@ -59,7 +58,7 @@ public class ProductServiceImpl implements ProductService {
             saveDataFromExcel(file.getInputStream());
             return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
         } catch (Exception e) {
-            throw RestException.restThrow("Excel file could not be read", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw RestException.restThrow(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -96,10 +95,10 @@ public class ProductServiceImpl implements ProductService {
         throw RestException.restThrow("Image not found", HttpStatus.NOT_FOUND);
     }
 
-    @Transactional
+//    @Transactional(noRollbackFor = DataIntegrityViolationException.class)
     protected void saveDataFromExcel(InputStream is) {
         try {
-            Workbook workbook = new HSSFWorkbook(is); // Streaming uchun SXSSFWorkbook
+            Workbook workbook = new HSSFWorkbook(is);
             Sheet sheet = workbook.getSheetAt(0);
 
             // Parallel ishlash uchun natijalarni yig'ish
@@ -119,11 +118,14 @@ public class ProductServiceImpl implements ProductService {
                 allProducts.addAll(future.get());
             }
 
-            // Batch Insert yordamida barcha mahsulotlarni saqlash
-            productRepository.saveAll(allProducts);
-
+            try {
+                // Batch Insert yordamida barcha mahsulotlarni saqlash
+                productRepository.saveAll(allProducts);
+            } catch (DataIntegrityViolationException e) {
+                System.out.println("Duplicate entry found for one of the products");
+            }
         } catch (Exception e) {
-            throw RestException.restThrow("Excel file could not be read", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw RestException.restThrow(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -146,7 +148,6 @@ public class ProductServiceImpl implements ProductService {
 
         if (!name.isEmpty()) {
             Optional<Product> existingProductOpt = productRepository.findByNameAndDeletedFalse(name);
-
             if (existingProductOpt.isPresent()) {
                 // Mahsulot mavjud bo'lsa, narxni yangilash
                 Product existingProduct = existingProductOpt.get();
@@ -162,7 +163,6 @@ public class ProductServiceImpl implements ProductService {
                 products.add(product);
             }
         }
-
         return products;
     }
 

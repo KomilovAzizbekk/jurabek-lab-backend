@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 @DynamicUpdate
 public class Product extends AbsLongDef {
 
+    @Column(unique = true, nullable = false)
     private String name;
 
     @Column(precision = 12, scale = 2)

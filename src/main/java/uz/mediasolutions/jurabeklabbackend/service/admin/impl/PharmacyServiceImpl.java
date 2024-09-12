@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -53,79 +54,73 @@ public class PharmacyServiceImpl implements PharmacyService {
     }
 
     @Override
-    @Transactional
     public ResponseEntity<?> addByFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw RestException.restThrow("File cannot be empty", HttpStatus.BAD_REQUEST);
         }
         try {
-            // Asinxron tarzda faylni qayta ishlash
-            saveDataFromExcelAsync(file.getInputStream());
+            // Faylni qayta ishlash
+            saveDataFromExcel(file.getInputStream());
             return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
         } catch (Exception e) {
             throw RestException.restThrow("Excel file could not be read!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @Async
-    @Transactional
-    public void saveDataFromExcelAsync(InputStream is) {
+    public void saveDataFromExcel(InputStream is) {
         try {
-            // Streaming uchun SXSSFWorkbook dan foydalaniladi
+            // Excel faylni streaming yordamida o'qish
             Workbook workbook = new SXSSFWorkbook(new XSSFWorkbook(is));
             Sheet sheet = workbook.getSheetAt(0);
 
-            List<Future<List<Pharmacy>>> futures = new ArrayList<>();
+            Set<String> processedNames = new HashSet<>();  // Excel va bazadagi name'larni to'plovchi Set
+            List<Pharmacy> pharmaciesToSave = new ArrayList<>(); // Bazaga saqlash uchun ro'yxat
 
-            // Har bir qatorni parallel qayta ishlash
+            // Har bir qatorni qayta ishlash
             for (Row row : sheet) {
-                if (row.getRowNum() != 0) {
-                    Future<List<Pharmacy>> future = executorService.submit(() -> processRow(row));
-                    futures.add(future);
+                if (row.getRowNum() != 0) {  // Birinchi qatorni o'tkazib yuboramiz (header)
+                    String name = getCellValue(row, 4);  // `name` qiymati 4-ustunda deb qabul qildik
+
+                    // Bazada yoki Setda mavjud bo'lmagan name'larni qayta ishlaymiz
+                    if (!processedNames.contains(name) && !pharmacyRepository.existsByNameAndDeletedFalse(name)) {
+                        processedNames.add(name);  // `name` qiymatini Setga qo'shamiz
+                        Pharmacy pharmacy = processRow(row);  // Qatorni qayta ishlash
+                        pharmaciesToSave.add(pharmacy);  // Bazaga saqlash uchun ro'yxatga qo'shamiz
+                    }
                 }
             }
 
-            List<Pharmacy> allPharmacies = new ArrayList<>();
-            for (Future<List<Pharmacy>> future : futures) {
-                allPharmacies.addAll(future.get());  // Barcha parallel qayta ishlangan natijalarni bir joyga to'playmiz
+            // Batch tarzida bazaga saqlaymiz (agar ro'yxat bo'sh bo'lmasa)
+            if (!pharmaciesToSave.isEmpty()) {
+                pharmacyRepository.saveAll(pharmaciesToSave);
             }
-
-            // Batch tarzida saqlaymiz
-            pharmacyRepository.saveAll(allPharmacies);
 
         } catch (Exception e) {
             throw RestException.restThrow("Excel file could not be read", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    // Har bir qatorni parallel qayta ishlash uchun yordamchi method
-    private List<Pharmacy> processRow(Row row) {
-        List<Pharmacy> pharmacies = new ArrayList<>();
+    // Har bir qatorni qayta ishlash uchun yordamchi method
+    private Pharmacy processRow(Row row) {
+        String regionName = getCellValue(row, 1);  // Region 1-ustun
+        String districtName = getCellValue(row, 2);  // District 2-ustun
+        String address = getCellValue(row, 3);  // Address 3-ustun
+        String name = getCellValue(row, 4);  // Name 4-ustun
 
-        String regionName = getCellValue(row, 1);
-        String districtName = getCellValue(row, 2);
-
+        // Region va District obyektlarini bazadan yoki keshdan olish
         Region savedRegion = getRegion(regionName);
         District savedDistrict = getDistrict(districtName, savedRegion);
 
-        String address = getCellValue(row, 3);
-        String name = getCellValue(row, 4);
-
-        if (!pharmacyRepository.existsByNameAndDeletedFalse(name)) {
-            Pharmacy pharmacy = Pharmacy.builder()
-                    .name(name)
-                    .district(savedDistrict)
-                    .address(address)
-                    .deleted(false)
-                    .build();
-
-            pharmacies.add(pharmacy);
-        }
-
-        return pharmacies;
+        // Yangi Pharmacy obyektini yaratish va qaytarish
+        return Pharmacy.builder()
+                .name(name)
+                .district(savedDistrict)
+                .address(address)
+                .deleted(false)
+                .build();
     }
 
-    // Kesh orqali region olish
+    // Regionni bazadan yoki keshdan olish funksiyasi
     private Region getRegion(String regionName) {
         if (regionCache.containsKey(regionName)) {
             return regionCache.get(regionName);
@@ -143,7 +138,7 @@ public class PharmacyServiceImpl implements PharmacyService {
         return region;
     }
 
-    // Kesh orqali district olish
+    // Districtni bazadan yoki keshdan olish funksiyasi
     private District getDistrict(String districtName, Region region) {
         if (districtCache.containsKey(districtName)) {
             return districtCache.get(districtName);
@@ -161,15 +156,19 @@ public class PharmacyServiceImpl implements PharmacyService {
         return district;
     }
 
+    // Excel fayldagi hujayralarni o'qish funksiyasi
     private String getCellValue(Row row, int columnIndex) {
         Cell cell = row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL);
         if (cell != null) {
-            return cell.toString();
+            return cell.toString().trim();  // Bo'sh joylarni olib tashlaymiz
         }
         return "";
     }
 
-//    @Override
+
+
+
+    //    @Override
 //    public ResponseEntity<?> add(PharmacyReqDTO dto) {
 //        Pharmacy.builder()
 //                .name(dto.getName())

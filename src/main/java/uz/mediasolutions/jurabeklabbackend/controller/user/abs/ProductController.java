@@ -19,7 +19,7 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 public interface ProductController {
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     content = {@Content(mediaType = "application/json",
@@ -30,7 +30,7 @@ public interface ProductController {
                              @RequestParam(defaultValue = "") String search);
 
     @GetMapping("/{orderId}")
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     content = {@Content(mediaType = "application/json",

@@ -47,4 +47,5 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
 
     Optional<Pharmacy> findByIdAndDeletedFalse(Long id);
 
+    Pharmacy findByNameAndDeletedFalse(String name);
 }
