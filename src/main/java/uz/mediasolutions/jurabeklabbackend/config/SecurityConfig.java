@@ -58,7 +58,7 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://jurabek-lab-admin.netlify.app", "https://jurabek-lab.medias.uz/swagger-ui/index.html"));
+        configuration.setAllowedOrigins(Arrays.asList("https://jurabek-lab-admin.netlify.app", "/swagger-ui/**", "/v3/api-docs/**"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token", "Origin", "Accept"));
         configuration.setAllowCredentials(true);
