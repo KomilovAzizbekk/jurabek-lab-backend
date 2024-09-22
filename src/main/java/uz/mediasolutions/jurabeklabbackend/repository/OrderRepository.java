@@ -21,7 +21,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "       o.total_price           as totalPrice,\n" +
             "       p.name                  as pharmacy,\n" +
             "       o.pharmacy_phone_number as phoneNumber,\n" +
-            "       o.pharmacy_address      as address\n" +
+            "       p.address\n" +
             "FROM orders o\n" +
             "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
             "WHERE (:status IS NULL\n" +
@@ -39,7 +39,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "       o.total_price           as totalPrice,\n" +
             "       p.name                  as pharmacy,\n" +
             "       o.pharmacy_phone_number as phoneNumber,\n" +
-            "       o.pharmacy_address      as address\n" +
+            "       p.address\n" +
             "FROM orders o\n" +
             "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
             "WHERE o.id = :id\n" +
@@ -54,7 +54,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "       o.total_price           as totalPrice,\n" +
             "       p.name,\n" +
             "       o.pharmacy_phone_number as phoneNumber,\n" +
-            "       o.pharmacy_address      as address\n" +
+            "       p.address\n" +
             "FROM orders o\n" +
             "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
             "WHERE :status IS NULL\n" +

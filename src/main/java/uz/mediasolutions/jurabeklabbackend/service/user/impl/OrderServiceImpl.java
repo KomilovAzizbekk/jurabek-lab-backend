@@ -74,7 +74,6 @@ public class OrderServiceImpl implements OrderService {
         );
 
         Order order = Order.builder()
-                .pharmacyAddress(dto.getAddress())
                 .user(user)
                 .totalPrice(dto.getTotalPrice())
                 .status(OrderStatus.SENT)

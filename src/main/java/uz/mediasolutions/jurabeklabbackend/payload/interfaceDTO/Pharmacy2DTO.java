@@ -6,4 +6,6 @@ public interface Pharmacy2DTO {
 
     String getName();
 
+    String getAddress();
+
 }

@@ -26,9 +26,6 @@ public class Order extends AbsLongDef {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
-    private String pharmacyAddress;
-
     @Column(precision = 12, scale = 2)
     private BigDecimal totalPrice;
 

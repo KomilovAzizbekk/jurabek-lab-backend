@@ -36,7 +36,8 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
     boolean existsByNameAndDeletedFalse(String name);
 
     @Query(value = "SELECT p.id,\n" +
-            "       p.name\n" +
+            "       p.name,\n" +
+            "       p.address\n" +
             "FROM pharmacies p\n" +
             "WHERE p.district_id = :districtId\n" +
             "  AND p.deleted = false\n" +
