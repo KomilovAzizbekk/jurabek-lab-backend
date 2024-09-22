@@ -33,7 +33,7 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
     Page<PharmacyDTO> findAllWithSearch(Pageable pageable,
                                         @Param("search") String search);
 
-    boolean existsByNameAndDeletedFalse(String name);
+    boolean existsByNameAndAddressAndDeletedFalse(String name, String address);
 
     @Query(value = "SELECT p.id,\n" +
             "       p.name,\n" +

@@ -33,7 +33,7 @@ public interface TransactionController {
     @PreAuthorize("hasRole('ROLE_USER')")
     ResponseEntity<?> addCard(@RequestBody @Valid CardReqDTO dto);
 
-    @PutMapping("/edit-card/{id}")
+    @PatchMapping("/edit-card/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     ResponseEntity<?> editCard(@PathVariable UUID id,
                                @RequestBody CardReqDTO dto);

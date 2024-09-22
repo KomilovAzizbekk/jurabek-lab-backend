@@ -71,17 +71,20 @@ public class PharmacyServiceImpl implements PharmacyService {
             Workbook workbook = new XSSFWorkbook(is);
             Sheet sheet = workbook.getSheetAt(0);
 
-            Set<String> processedNames = new HashSet<>();  // Excel va bazadagi name'larni to'plovchi Set
+            Set<String> processedNamesAndAddresses = new HashSet<>();  // Excel va bazadagi name'larni to'plovchi Set
             List<Pharmacy> pharmaciesToSave = new ArrayList<>(); // Bazaga saqlash uchun ro'yxat
 
             // Har bir qatorni qayta ishlash
             for (Row row : sheet) {
                 if (row.getRowNum() != 0) {  // Birinchi qatorni o'tkazib yuboramiz (header)
+                    String address = getCellValue(row, 3);  // `address` qiymati 3-ustunda deb qabul qildik
                     String name = getCellValue(row, 4);  // `name` qiymati 4-ustunda deb qabul qildik
+                    String combine = name.trim() + " " + address.trim();
 
                     // Bazada yoki Setda mavjud bo'lmagan name'larni qayta ishlaymiz
-                    if (!processedNames.contains(name) && !pharmacyRepository.existsByNameAndDeletedFalse(name)) {
-                        processedNames.add(name);  // `name` qiymatini Setga qo'shamiz
+                    if (!processedNamesAndAddresses.contains(combine) &&
+                            !pharmacyRepository.existsByNameAndAddressAndDeletedFalse(name, address)) {
+                        processedNamesAndAddresses.add(combine);
                         Pharmacy pharmacy = processRow(row);  // Qatorni qayta ishlash
                         pharmaciesToSave.add(pharmacy);  // Bazaga saqlash uchun ro'yxatga qo'shamiz
                     }
@@ -162,8 +165,6 @@ public class PharmacyServiceImpl implements PharmacyService {
         }
         return "";
     }
-
-
 
 
     //    @Override

@@ -18,7 +18,7 @@ import uz.mediasolutions.jurabeklabbackend.entity.template.AbsLongDef;
 @DynamicUpdate
 public class Pharmacy extends AbsLongDef {
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
