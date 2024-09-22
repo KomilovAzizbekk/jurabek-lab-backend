@@ -13,7 +13,7 @@ public interface TransactionController {
     @GetMapping("/all")
     ResponseEntity<Page<?>> getAll(@RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
                                    @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
-                                   @RequestParam(defaultValue = "") String status);
+                                   @RequestParam(required = false) String status);
 
     @PatchMapping("/paid-or-reject/{id}")
     ResponseEntity<?> paidOrRejected(@PathVariable UUID id,

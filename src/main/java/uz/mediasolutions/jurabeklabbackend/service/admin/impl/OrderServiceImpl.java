@@ -34,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
+    private final PharmacyRepository pharmacyRepository;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String status) {
@@ -61,7 +62,8 @@ public class OrderServiceImpl implements OrderService {
                 Product product1 = productRepository.findByIdAndDeletedFalse(productId).orElseThrow(
                         () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
                 );
-                orderProduct.setProduct(product1);
+                orderProduct.setProductId(product1.getId());
+                orderProduct.setProductName(product1.getName());
             });
             Optional.ofNullable(product.getQuantity()).ifPresent(orderProduct::setQuantity);
             orderProducts.add(orderProduct);
@@ -75,6 +77,10 @@ public class OrderServiceImpl implements OrderService {
     public ResponseEntity<?> accept(Long id, boolean accept) {
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> RestException.restThrow("Order not found", HttpStatus.NOT_FOUND)
+        );
+
+        Pharmacy pharmacy = pharmacyRepository.findById(order.getPharmacyId()).orElseThrow(
+                () -> RestException.restThrow("Pharmacy not found", HttpStatus.NOT_FOUND)
         );
 
         if (accept) {
@@ -92,7 +98,8 @@ public class OrderServiceImpl implements OrderService {
                 .user(order.getUser())
                 .amount(income)
                 .status(TransactionStatus.DONE)
-                .pharmacy(order.getPharmacy())
+                .pharmacyId(pharmacy.getId())
+                .pharmacyName(pharmacy.getName())
                 .build();
 
         transactionRepository.save(transaction);

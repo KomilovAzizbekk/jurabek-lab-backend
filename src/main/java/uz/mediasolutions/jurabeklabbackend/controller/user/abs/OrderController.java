@@ -25,7 +25,7 @@ public interface OrderController {
     })
     ResponseEntity<Page<?>> findAll(@RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
                                     @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
-                                    @RequestParam(defaultValue = "") String status);
+                                    @RequestParam(required = false) String status);
 
     @GetMapping("/get/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")

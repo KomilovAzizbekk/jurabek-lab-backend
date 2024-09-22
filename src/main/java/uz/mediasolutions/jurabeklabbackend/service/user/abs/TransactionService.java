@@ -6,6 +6,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.CardReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.WithdrawReqDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TransactionService {
 
@@ -18,4 +19,8 @@ public interface TransactionService {
     ResponseEntity<?> addCard(CardReqDTO dto);
 
     ResponseEntity<?> withdraw(WithdrawReqDTO dto);
+
+    ResponseEntity<?> editCard(UUID id, CardReqDTO dto);
+
+    ResponseEntity<?> deleteCard(UUID id);
 }

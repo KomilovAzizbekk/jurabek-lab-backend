@@ -36,7 +36,7 @@ public interface UserController {
     })
     ResponseEntity<?> getAllUsers(@RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
                                   @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
-                                  @RequestParam(defaultValue = "") String search);
+                                  @RequestParam(required = false) String search);
 
     @GetMapping("/get-all-admins")
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
@@ -47,7 +47,7 @@ public interface UserController {
     })
     ResponseEntity<?> getAllAdmins(@RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
                                    @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
-                                   @RequestParam(defaultValue = "") String search);
+                                   @RequestParam(required = false) String search);
 
     @PostMapping("/add-admin")
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")

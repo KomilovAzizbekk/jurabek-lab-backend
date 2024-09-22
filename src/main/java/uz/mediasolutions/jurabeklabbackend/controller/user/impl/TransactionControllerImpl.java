@@ -10,6 +10,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.WithdrawReqDTO;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.TransactionService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController("userTransactionController")
 @RequiredArgsConstructor
@@ -35,6 +36,16 @@ public class TransactionControllerImpl implements TransactionController {
     @Override
     public ResponseEntity<?> addCard(CardReqDTO dto) {
         return service.addCard(dto);
+    }
+
+    @Override
+    public ResponseEntity<?> editCard(UUID id, CardReqDTO dto) {
+        return service.editCard(id, dto);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteCard(UUID id) {
+        return service.deleteCard(id);
     }
 
     @Override

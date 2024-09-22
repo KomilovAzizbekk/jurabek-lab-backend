@@ -25,7 +25,7 @@ public interface PharmacyController {
     })
     ResponseEntity<Page<?>> getAll(@RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
                                    @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
-                                   @RequestParam(defaultValue = "") String search);
+                                   @RequestParam(required = false) String search);
 
     @PostMapping(value = "/add-by-file", consumes = "multipart/form-data")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")

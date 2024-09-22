@@ -17,4 +17,6 @@ public interface Order2DTO {
 
     String getPhoneNumber();
 
+    String getAddress();
+
 }

@@ -24,6 +24,8 @@ import uz.mediasolutions.jurabeklabbackend.service.user.abs.TransactionService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service("userTransactionService")
 @RequiredArgsConstructor
@@ -71,6 +73,11 @@ public class TransactionServiceImpl implements TransactionService {
                 () -> RestException.restThrow("Card not found", HttpStatus.NOT_FOUND)
         );
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (user.getBalance().subtract(dto.getAmount()).intValue() < 0) {
+            throw RestException.restThrow("Insufficient balance", HttpStatus.BAD_REQUEST);
+        }
+
         Transaction transaction = Transaction.builder()
                 .type(TransactionType.WITHDRAWAL)
                 .amount(dto.getAmount())
@@ -80,5 +87,41 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
         transactionRepository.save(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
+    }
+
+    @Override
+    public ResponseEntity<?> editCard(UUID id, CardReqDTO dto) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Card card = cardRepository.findById(id).orElseThrow(
+                () -> RestException.restThrow("Card not found", HttpStatus.NOT_FOUND)
+        );
+
+        if (card.getUser().getId() != user.getId()) {
+            throw RestException.restThrow("Card doesn't belong to this user", HttpStatus.FORBIDDEN);
+        }
+
+        Optional.ofNullable(dto.getCardNumber()).ifPresent(card::setNumber);
+        Optional.ofNullable(dto.getName()).ifPresent(card::setName);
+        cardRepository.save(card);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
+    }
+
+    @Override
+    public ResponseEntity<?> deleteCard(UUID id) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Card card = cardRepository.findById(id).orElseThrow(
+                () -> RestException.restThrow("Card not found", HttpStatus.NOT_FOUND)
+        );
+
+        if (card.getUser().getId() != user.getId()) {
+            throw RestException.restThrow("Card doesn't belong to this user", HttpStatus.FORBIDDEN);
+        }
+
+        try {
+            cardRepository.deleteById(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
+        } catch (Exception e) {
+            throw RestException.restThrow("Delete failed", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

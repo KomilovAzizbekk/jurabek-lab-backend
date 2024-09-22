@@ -2,6 +2,7 @@ package uz.mediasolutions.jurabeklabbackend.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import uz.mediasolutions.jurabeklabbackend.entity.template.AbsLongDef;
 
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @DynamicUpdate
+@DynamicInsert
 public class Product extends AbsLongDef {
 
     @Column(unique = true, nullable = false)

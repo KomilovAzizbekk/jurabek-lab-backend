@@ -18,9 +18,9 @@ public class OrderProduct extends AbsLongDef {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    private Long productId;
+
+    private String productName; //Statik bo'lishi uchun
 
     private Integer quantity;
 

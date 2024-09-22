@@ -41,6 +41,8 @@ public class OrderServiceImpl implements OrderService {
             throw RestException.restThrow("Couldn't recognize user", HttpStatus.UNAUTHORIZED);
         }
 
+        System.out.println(user.getId());
+
         Page<OrderDTO> orders = orderRepository.getAllByStatus(status, user.getId(), PageRequest.of(page, size));
         return ResponseEntity.ok(orders);
     }
@@ -72,10 +74,12 @@ public class OrderServiceImpl implements OrderService {
         );
 
         Order order = Order.builder()
+                .pharmacyAddress(dto.getAddress())
                 .user(user)
                 .totalPrice(dto.getTotalPrice())
                 .status(OrderStatus.SENT)
-                .pharmacy(pharmacy)
+                .pharmacyId(pharmacy.getId())
+                .pharmacyName(pharmacy.getName())
                 .pharmacyPhoneNumber(dto.getPharmacyPhoneNumber())
                 .build();
 
@@ -92,7 +96,8 @@ public class OrderServiceImpl implements OrderService {
 
             OrderProduct orderProduct = OrderProduct.builder()
                     .order(savedOrder)
-                    .product(product1)
+                    .productId(product1.getId())
+                    .productName(product1.getName())
                     .quantity(product.getQuantity())
                     .build();
 

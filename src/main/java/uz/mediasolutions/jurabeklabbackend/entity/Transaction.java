@@ -26,9 +26,11 @@ public class Transaction extends AbsUUID {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pharmacy_id")
-    private Pharmacy pharmacy;
+    @Column(nullable = false)
+    private Long pharmacyId;
+
+    @Column(nullable = false)
+    private String pharmacyName; //Statik bo'lishi uchun
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")

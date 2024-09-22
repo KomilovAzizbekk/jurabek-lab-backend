@@ -19,7 +19,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     @Query(value = "SELECT u.balance FROM users u WHERE u.id = :userId", nativeQuery = true)
     InfoDTO getUserBalance(@Param("userId") UUID userId);
 
-    @Query(value = "SELECT c.name,\n" +
+    @Query(value = "SELECT c.id,\n" +
+            "       c.name,\n" +
             "       c.number\n" +
             "FROM cards c\n" +
             "         LEFT JOIN public.users u ON u.id = c.user_id\n" +

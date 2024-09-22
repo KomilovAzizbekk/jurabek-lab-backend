@@ -41,6 +41,6 @@ public interface PharmacyController {
                             schema = @Schema(implementation = Pharmacy2DTO.class))})
     })
     ResponseEntity<List<?>> getAllPharmacies(@PathVariable Long districtId,
-                                             @RequestParam(defaultValue = "") String search);
+                                             @RequestParam(required = false) String search);
 
 }

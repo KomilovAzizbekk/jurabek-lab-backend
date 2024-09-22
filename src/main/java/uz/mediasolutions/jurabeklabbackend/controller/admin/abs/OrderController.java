@@ -25,7 +25,7 @@ public interface OrderController {
     })
     ResponseEntity<?> getAll(@RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
                              @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
-                             @RequestParam(defaultValue = "") String status);
+                             @RequestParam(required = false) String status);
 
     @GetMapping("/get-order-products/{orderId}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")

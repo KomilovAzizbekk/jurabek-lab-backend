@@ -19,4 +19,6 @@ public interface OrderDTO {
 
     String getPhoneNumber();
 
+    String getAddress();
+
 }
