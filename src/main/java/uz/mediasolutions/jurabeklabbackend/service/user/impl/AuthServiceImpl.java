@@ -12,13 +12,15 @@ import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
-import uz.mediasolutions.jurabeklabbackend.payload.res.TokenDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.RefreshTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.secret.JwtService;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
+
+import java.math.BigDecimal;
+import java.util.Random;
 
 @Service("userAuthService")
 @RequiredArgsConstructor
@@ -28,24 +30,50 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SmsService smsService;
+
+    String message = "<#> Jurabek Lab mobil ilovasidan ro‘yxatdan o‘tish uchun tasdiqlash kodi: ";
 
     @Override
     public ResponseEntity<?> signIn(String lang, SignInDTO dto) {
+        User existingUser;
+        // Faqat phone number junatilganda ushbu if ishlaydi
         if (dto.getOtp() == null || dto.getOtp().isEmpty()) {
             if (!userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
                 User user = User.builder()
                         .phoneNumber(dto.getPhoneNumber())
                         .role(RoleName.ROLE_USER)
                         .registered(false)
+                        .balance(new BigDecimal(0))
                         .language(getLanguage(lang))
                         .build();
-                userRepository.save(user);
+                existingUser = userRepository.save(user);
+            } else {
+                existingUser = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+                        () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
+                );
             }
-            //todo "otp should be sent"
-            return ResponseEntity.ok("OTP is sent");
+            // Sending otp
+            try {
+                Random rand = new Random();
+                String otp = String.format("%04d", rand.nextInt(10000));
+
+                existingUser.setOtp(otp);
+                userRepository.save(existingUser);
+
+                smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", null);
+                return ResponseEntity.ok("OTP is sent");
+            } catch (Exception e) {
+                throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
 
-        if (dto.getOtp().equals("0000")) { //todo here should check otp
+        // Agar phone number va otp junatilganda ushbu if ishlaydi. Yani sms junatilgandan so'ng
+        User u = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+                () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
+        );
+
+        if (dto.getOtp().equals(u.getOtp())) {
             User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
                     () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
             );

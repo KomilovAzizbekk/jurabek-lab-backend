@@ -7,7 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
+import uz.mediasolutions.jurabeklabbackend.repository.SmsTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
+import uz.mediasolutions.jurabeklabbackend.service.user.impl.SmsService;
 
 @Component
 @RequiredArgsConstructor
@@ -15,6 +17,8 @@ public class DataLoader implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SmsTokenRepository tokenRepository;
+    private final SmsService smsService;
 
     @Value("${spring.sql.init.mode}")
     private String mode;
@@ -25,6 +29,9 @@ public class DataLoader implements CommandLineRunner {
             addAdmin();
         }
 
+        if (tokenRepository.countSmsToken() != 1) {
+            smsService.obtainToken();
+        }
 
     }
 

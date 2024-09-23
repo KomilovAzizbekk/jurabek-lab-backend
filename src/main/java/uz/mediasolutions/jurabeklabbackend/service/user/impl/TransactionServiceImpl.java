@@ -75,8 +75,8 @@ public class TransactionServiceImpl implements TransactionService {
         );
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (user.getBalance().subtract(dto.getAmount()).intValue() < 0) {
-            throw RestException.restThrow("Insufficient balance", HttpStatus.BAD_REQUEST);
+        if (user.getBalance().subtract(dto.getAmount()).intValue() < 0 || dto.getAmount().intValue() == 0) {
+            throw RestException.restThrow("Insufficient balance or withdrawal amount", HttpStatus.BAD_REQUEST);
         }
 
         Transaction transaction = Transaction.builder()
