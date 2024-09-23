@@ -24,6 +24,7 @@ import uz.mediasolutions.jurabeklabbackend.service.user.abs.TransactionService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -96,7 +97,7 @@ public class TransactionServiceImpl implements TransactionService {
                 () -> RestException.restThrow("Card not found", HttpStatus.NOT_FOUND)
         );
 
-        if (card.getUser().getId() != user.getId()) {
+        if (!card.getUser().getId().equals(user.getId())) {
             throw RestException.restThrow("Card doesn't belong to this user", HttpStatus.FORBIDDEN);
         }
 
@@ -113,7 +114,7 @@ public class TransactionServiceImpl implements TransactionService {
                 () -> RestException.restThrow("Card not found", HttpStatus.NOT_FOUND)
         );
 
-        if (card.getUser().getId() != user.getId()) {
+        if (!user.getId().equals(card.getUser().getId())) {
             throw RestException.restThrow("Card doesn't belong to this user", HttpStatus.FORBIDDEN);
         }
 
