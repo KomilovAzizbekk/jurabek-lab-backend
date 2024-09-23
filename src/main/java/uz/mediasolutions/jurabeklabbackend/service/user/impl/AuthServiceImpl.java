@@ -2,6 +2,7 @@ package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,9 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.math.BigDecimal;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service("userAuthService")
 @RequiredArgsConstructor
@@ -31,6 +35,8 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final SmsService smsService;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     String message = "<#> Jurabek Lab mobil ilovasidan ro‘yxatdan o‘tish uchun tasdiqlash kodi: ";
 
@@ -61,8 +67,28 @@ public class AuthServiceImpl implements AuthService {
                 existingUser.setOtp(otp);
                 userRepository.save(existingUser);
 
-                smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", null);
-                return ResponseEntity.ok("OTP is sent");
+                HttpStatusCode statusCode = smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", null);
+
+                if (statusCode == HttpStatus.OK) {
+                    return ResponseEntity.ok("OTP is sent");
+                } else if (statusCode == HttpStatus.UNAUTHORIZED) {
+                    smsService.refreshToken();
+                    smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", null);
+                } else {
+                    throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+
+                // 1 daqiqadan so'ng OTPni bazadan o'chirish uchun vazifani rejalashtirish
+                scheduler.schedule(() -> {
+                    try {
+                        existingUser.setOtp(null); // OTPni o'chirish
+                        userRepository.save(existingUser); // O'chirilgan OTPni saqlash
+                        System.out.println("OTP o'chirildi.");
+                    } catch (Exception e) {
+                        System.err.println("OTP o'chirishda xato: " + e.getMessage());
+                    }
+                }, 2, TimeUnit.MINUTES); // 2 daqiqadan so'ng bajarish
             } catch (Exception e) {
                 throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
             }

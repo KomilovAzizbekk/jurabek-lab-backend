@@ -80,7 +80,7 @@ public class SmsService {
         }
     }
 
-    public String sendSms(String mobilePhone, String message, String from, String callbackUrl) {
+    public HttpStatusCode sendSms(String mobilePhone, String message, String from, String callbackUrl) {
         SmsToken smsToken = tokenRepository.findById(1L).orElseThrow(
                 () -> RestException.restThrow("Token not found", HttpStatus.NOT_FOUND)
         );
@@ -101,11 +101,7 @@ public class SmsService {
 
         ResponseEntity<SmsResponse> response = restTemplate.exchange(smsUrl, HttpMethod.POST, requestEntity, SmsResponse.class);
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return Objects.requireNonNull(response.getBody()).getId();
-        } else {
-            throw new RuntimeException("Failed to send SMS: " + response.getStatusCode());
-        }
+        return response.getStatusCode();
     }
 
     @Getter
