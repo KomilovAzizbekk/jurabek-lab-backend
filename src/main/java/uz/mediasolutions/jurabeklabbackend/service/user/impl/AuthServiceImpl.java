@@ -1,6 +1,7 @@
 package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.internal.util.compare.CalendarComparator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -25,6 +26,9 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -68,12 +72,31 @@ public class AuthServiceImpl implements AuthService {
                         () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
                 );
             }
+
+            // Foydalanuvchi 2 daqiqa ichida kod yuborishdan foydalanganligini tekshirish
+            if (existingUser.getLastOtpTime() != null) {
+                System.out.println("Salom");
+                LocalDateTime lastOtpTime = existingUser.getLastOtpTime();
+                LocalDateTime applicableTime = lastOtpTime.plusMinutes(2);
+                System.out.println(lastOtpTime);
+                System.out.println(applicableTime);
+                System.out.println(LocalDateTime.now());
+                if (LocalDateTime.now().isBefore(applicableTime)) {
+                    Duration duration = Duration.between(LocalDateTime.now(), applicableTime);
+                    throw RestException.restThrow("There should be at least 2 minutes between every sms. " +
+                            "Remaining time: " +
+                            duration.getSeconds() + " seconds",
+                            HttpStatus.BAD_REQUEST);
+                }
+            }
+
             // Sending otp
             try {
                 Random rand = new Random();
                 String otp = String.format("%04d", rand.nextInt(10000));
 
                 existingUser.setOtp(otp);
+                existingUser.setLastOtpTime(LocalDateTime.now());
                 userRepository.save(existingUser);
 
                 HttpStatusCode statusCode = smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", callbackUrl);

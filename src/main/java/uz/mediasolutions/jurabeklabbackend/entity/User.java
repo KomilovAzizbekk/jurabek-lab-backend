@@ -11,6 +11,7 @@ import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
 import uz.mediasolutions.jurabeklabbackend.entity.template.AbsUUID;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class User extends AbsUUID implements UserDetails {
     private String phoneNumber;
 
     private String otp;
+
+    private LocalDateTime lastOtpTime;
 
     private String firstName;
 
