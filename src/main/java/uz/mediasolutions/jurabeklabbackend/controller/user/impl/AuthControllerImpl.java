@@ -8,6 +8,9 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
+import uz.mediasolutions.jurabeklabbackend.service.user.impl.SmsService;
+
+import java.util.Map;
 
 @RestController("userAuthController")
 @RequiredArgsConstructor
@@ -28,5 +31,10 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public ResponseEntity<?> logout() {
         return service.logout();
+    }
+
+    @Override
+    public void getSmsInfo(Map<String, Object> callbackData) {
+        service.saveSmsInfo(callbackData);
     }
 }

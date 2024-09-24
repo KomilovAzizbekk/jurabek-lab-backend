@@ -5,6 +5,8 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 
+import java.util.Map;
+
 public interface AuthService {
 
     ResponseEntity<?> signIn(String lang, SignInDTO dto);
@@ -13,4 +15,5 @@ public interface AuthService {
 
     ResponseEntity<?> logout();
 
+    void saveSmsInfo(Map<String, Object> callbackData);
 }

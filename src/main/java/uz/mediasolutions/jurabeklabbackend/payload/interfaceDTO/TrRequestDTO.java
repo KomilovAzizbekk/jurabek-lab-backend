@@ -10,6 +10,8 @@ public interface TrRequestDTO {
 
     String getStatus();
 
+    String getNumber();
+
     String getPhoneNumber();
 
 }

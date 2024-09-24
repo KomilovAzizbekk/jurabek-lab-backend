@@ -15,6 +15,8 @@ public interface TransactionHistoryDTO {
 
     String getPharmacy();
 
+    Long getNumber();
+
     Timestamp getUpdatedTime();
 
 }

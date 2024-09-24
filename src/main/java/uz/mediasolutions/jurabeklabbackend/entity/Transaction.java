@@ -26,6 +26,9 @@ public class Transaction extends AbsUUID {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(columnDefinition = "serial")
+    private Long number;
+
     @Column(nullable = false)
     private Long pharmacyId;
 

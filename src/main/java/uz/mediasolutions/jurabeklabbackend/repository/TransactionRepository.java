@@ -30,6 +30,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     @Query(value = "SELECT t.amount,\n" +
             "       t.type,\n" +
             "       t.status,\n" +
+            "       t.number,\n" +
             "       CASE WHEN c.number IS NOT NULL THEN RIGHT(c.number, 4) ELSE NULL END as card,\n" +
             "       p.name                                                               as pharmacy,\n" +
             "       t.updated_at                                                         as upadtedTime\n" +
@@ -45,6 +46,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
 
     @Query(value = "SELECT c.number       as card,\n" +
             "       t.amount,\n" +
+            "       t.number,\n" +
             "       t.status,\n" +
             "       u.phone_number as phoneNumber\n" +
             "FROM transactions t\n" +

@@ -9,7 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
+import uz.mediasolutions.jurabeklabbackend.service.user.impl.SmsService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
+
+import java.util.Map;
+import java.util.Objects;
 
 @RequestMapping(Rest.BASE_PATH + "app/auth")
 public interface AuthController {
@@ -24,5 +28,8 @@ public interface AuthController {
 
     @PostMapping("/logout")
     ResponseEntity<?> logout();
+
+    @PostMapping("/sms-callback")
+    void getSmsInfo(@RequestBody Map<String, Object> callbackData);
 
 }

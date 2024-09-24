@@ -1,6 +1,7 @@
 package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.mediasolutions.jurabeklabbackend.entity.RefreshToken;
+import uz.mediasolutions.jurabeklabbackend.entity.SmsInfo;
 import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
@@ -15,12 +17,15 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.RefreshTokenRepository;
+import uz.mediasolutions.jurabeklabbackend.repository.SmsInfoRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.secret.JwtService;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,8 +42,12 @@ public class AuthServiceImpl implements AuthService {
     private final SmsService smsService;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final SmsInfoRepository smsInfoRepository;
 
     String message = "<#> Jurabek Lab mobil ilovasidan ro‘yxatdan o‘tish uchun tasdiqlash kodi: ";
+
+    @Value("${sms.callback.url}")
+    private String callbackUrl;
 
     @Override
     public ResponseEntity<?> signIn(String lang, SignInDTO dto) {
@@ -67,19 +76,19 @@ public class AuthServiceImpl implements AuthService {
                 existingUser.setOtp(otp);
                 userRepository.save(existingUser);
 
-                HttpStatusCode statusCode = smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", null);
+                HttpStatusCode statusCode = smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", callbackUrl);
 
                 if (statusCode == HttpStatus.OK) {
                     return ResponseEntity.ok("OTP is sent");
                 } else if (statusCode == HttpStatus.UNAUTHORIZED) {
                     smsService.refreshToken();
-                    smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", null);
+                    smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", callbackUrl);
                 } else {
                     throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
 
-                // 1 daqiqadan so'ng OTPni bazadan o'chirish uchun vazifani rejalashtirish
+                // 2 daqiqadan so'ng OTPni bazadan o'chirish uchun vazifani rejalashtirish
                 scheduler.schedule(() -> {
                     try {
                         existingUser.setOtp(null); // OTPni o'chirish
@@ -90,6 +99,7 @@ public class AuthServiceImpl implements AuthService {
                     }
                 }, 2, TimeUnit.MINUTES); // 2 daqiqadan so'ng bajarish
             } catch (Exception e) {
+                e.printStackTrace();
                 throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
@@ -103,6 +113,10 @@ public class AuthServiceImpl implements AuthService {
             User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
                     () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
             );
+
+            user.setOtp(null);
+            userRepository.save(user);
+
             if (user.isRegistered()) {
                 return ResponseEntity.ok(getTokenForUser(user));
             } else {
@@ -138,6 +152,32 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Rest.ERROR);
         }
+    }
+
+    @Override
+    public void saveSmsInfo(Map<String, Object> callbackData) {
+        // Olingan ma'lumotlarni ishlash uchun logika qo'shish
+        String requestId = (String) callbackData.get("request_id");
+        String messageId = (String) callbackData.get("message_id");
+        String userSmsId = (String) callbackData.get("user_sms_id");
+        String country = (String) callbackData.get("country");
+        String phoneNumber = (String) callbackData.get("phone_number");
+        Integer smsCount = (Integer) callbackData.get("sms_count");
+        String status = (String) callbackData.get("status");
+        Timestamp statusDate = (Timestamp) callbackData.get("status_date");
+
+        SmsInfo smsInfo = SmsInfo.builder()
+                .requestId(requestId)
+                .messageId(messageId)
+                .userSmsId(userSmsId)
+                .country(country)
+                .phoneNumber(phoneNumber)
+                .smsCount(smsCount)
+                .status(status)
+                .statusDate(statusDate)
+                .build();
+
+        smsInfoRepository.save(smsInfo);
     }
 
     private TokenUserDTO getTokenForUser(User user) {
