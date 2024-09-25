@@ -11,7 +11,9 @@ public interface TransactionHistoryDTO {
 
     String getStatus();
 
-    String getCard();
+    String getCardNumber();
+
+    String getCardName();
 
     String getPharmacy();
 

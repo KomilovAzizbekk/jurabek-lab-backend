@@ -1,7 +1,6 @@
 package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.internal.util.compare.CalendarComparator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -27,8 +26,9 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executors;
@@ -56,7 +56,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> signIn(String lang, SignInDTO dto) {
         User existingUser;
-        // Faqat phone number junatilganda ushbu if ishlaydi
+
+        // Faqat telefon raqam junatilganda
         if (dto.getOtp() == null || dto.getOtp().isEmpty()) {
             if (!userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
                 User user = User.builder()
@@ -73,30 +74,26 @@ public class AuthServiceImpl implements AuthService {
                 );
             }
 
-            // Foydalanuvchi 2 daqiqa ichida kod yuborishdan foydalanganligini tekshirish
+            // Foydalanuvchi oxirgi marta OTP yuborilganidan 1 daqiqa o'tganligini tekshirish
             if (existingUser.getLastOtpTime() != null) {
-                System.out.println("Salom");
-                LocalDateTime lastOtpTime = existingUser.getLastOtpTime();
-                LocalDateTime applicableTime = lastOtpTime.plusMinutes(2);
-                System.out.println(lastOtpTime);
-                System.out.println(applicableTime);
-                System.out.println(LocalDateTime.now());
-                if (LocalDateTime.now().isBefore(applicableTime)) {
-                    Duration duration = Duration.between(LocalDateTime.now(), applicableTime);
-                    throw RestException.restThrow("There should be at least 2 minutes between every sms. " +
-                            "Remaining time: " +
-                            duration.getSeconds() + " seconds",
+                Instant lastOtpTime = existingUser.getLastOtpTime().toInstant(ZoneOffset.UTC); // UTC ga o'tkazish
+                Instant applicableTime = lastOtpTime.plus(1, ChronoUnit.MINUTES); // 1 daqiqa qo'shish
+
+                if (Instant.now().isBefore(applicableTime)) {
+                    Duration duration = Duration.between(Instant.now(), applicableTime);
+                    throw RestException.restThrow("There should be at least 1 minute between every SMS. " +
+                                    "Remaining time: " + duration.getSeconds() + " seconds",
                             HttpStatus.BAD_REQUEST);
                 }
             }
 
-            // Sending otp
+            // OTP yuborish
             try {
                 Random rand = new Random();
                 String otp = String.format("%04d", rand.nextInt(10000));
 
                 existingUser.setOtp(otp);
-                existingUser.setLastOtpTime(LocalDateTime.now());
+                existingUser.setLastOtpTime(Instant.now().atOffset(ZoneOffset.UTC).toLocalDateTime());
                 userRepository.save(existingUser);
 
                 HttpStatusCode statusCode = smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", callbackUrl);
@@ -110,24 +107,22 @@ public class AuthServiceImpl implements AuthService {
                     throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
-
-                // 2 daqiqadan so'ng OTPni bazadan o'chirish uchun vazifani rejalashtirish
+                // OTPni 2 daqiqadan so'ng o'chirish
                 scheduler.schedule(() -> {
                     try {
-                        existingUser.setOtp(null); // OTPni o'chirish
-                        userRepository.save(existingUser); // O'chirilgan OTPni saqlash
+                        existingUser.setOtp(null);
+                        userRepository.save(existingUser);
                         System.out.println("OTP o'chirildi.");
                     } catch (Exception e) {
                         System.err.println("OTP o'chirishda xato: " + e.getMessage());
                     }
-                }, 2, TimeUnit.MINUTES); // 2 daqiqadan so'ng bajarish
+                }, 2, TimeUnit.MINUTES);
             } catch (Exception e) {
-                e.printStackTrace();
                 throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
 
-        // Agar phone number va otp junatilganda ushbu if ishlaydi. Yani sms junatilgandan so'ng
+        // Agar phone number va otp junatilsa, tekshirish
         User u = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
                 () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
         );
@@ -146,8 +141,9 @@ public class AuthServiceImpl implements AuthService {
                 return ResponseEntity.ok("Go to sign up");
             }
         }
-        return ResponseEntity.status(401).body("Invalid OTP");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP");
     }
+
 
     @Override
     public ResponseEntity<TokenUserDTO> signUp(String lang, SignUpDTO dto) {

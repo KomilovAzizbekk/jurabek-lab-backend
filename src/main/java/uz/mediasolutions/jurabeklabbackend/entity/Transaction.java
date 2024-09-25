@@ -29,10 +29,8 @@ public class Transaction extends AbsUUID {
     @Column(columnDefinition = "serial")
     private Long number;
 
-    @Column(nullable = false)
     private Long pharmacyId;
 
-    @Column(nullable = false)
     private String pharmacyName; //Statik bo'lishi uchun
 
     @ManyToOne(fetch = FetchType.LAZY)

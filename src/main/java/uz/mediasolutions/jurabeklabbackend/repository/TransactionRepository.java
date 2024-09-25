@@ -31,7 +31,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             "       t.type,\n" +
             "       t.status,\n" +
             "       t.number,\n" +
-            "       CASE WHEN c.number IS NOT NULL THEN RIGHT(c.number, 4) ELSE NULL END as card,\n" +
+            "       c.name                                                               as cardName,\n" +
+            "       CASE WHEN c.number IS NOT NULL THEN RIGHT(c.number, 4) ELSE NULL END as cardNumber,\n" +
             "       p.name                                                               as pharmacy,\n" +
             "       t.updated_at                                                         as upadtedTime\n" +
             "FROM transactions t\n" +
