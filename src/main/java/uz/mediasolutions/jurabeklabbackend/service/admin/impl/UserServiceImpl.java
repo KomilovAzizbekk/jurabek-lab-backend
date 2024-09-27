@@ -14,6 +14,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.AdminDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.UserDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.AdminReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.MeResDTO;
+import uz.mediasolutions.jurabeklabbackend.repository.NotificationRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.UserService;
 import uz.mediasolutions.jurabeklabbackend.utills.CommonUtils;
@@ -22,12 +23,13 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
+@Service("adminUserService")
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationRepository notificationRepository;
 
     @Override
     public ResponseEntity<?> getAllUsers(int page, int size, String search) {
@@ -43,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseEntity<?> addAdmin(AdminReqDTO dto) {
-        if (userRepository.existsByUsername(dto.getUsername())) {
+        if (userRepository.existsByUsernameAndDeletedFalse(dto.getUsername())) {
             throw RestException.restThrow("Admin already exists with this username", HttpStatus.CONFLICT);
         }
         if (dto.getRole().equals(RoleName.ROLE_USER.name())) {
@@ -52,6 +54,7 @@ public class UserServiceImpl implements UserService {
         try {
             User admin = User.builder()
                     .username(dto.getUsername())
+                    .deleted(false)
                     .password(passwordEncoder.encode(dto.getPassword()))
                     .role(RoleName.valueOf(dto.getRole()))
                     .build();
@@ -123,6 +126,8 @@ public class UserServiceImpl implements UserService {
         User user = (User) CommonUtils.getUserFromSecurityContext();
         assert user != null;
 
+        int notifications = notificationRepository.countAllByUserIdAndViewedFalse(user.getId());
+
         MeResDTO me = MeResDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -130,6 +135,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(user.getFirstName())
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole().name())
+                .notifications(notifications)
                 .build();
 
         return ResponseEntity.ok(me);

@@ -13,6 +13,7 @@ public interface Rest {
             "/api/app/auth/**",
             "/api/admin/auth/**",
             "/api/files/get/**",
+            "/api/admin/language/**",
             "/*",
             "/error",
     };

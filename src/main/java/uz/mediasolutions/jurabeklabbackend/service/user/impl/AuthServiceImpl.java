@@ -59,17 +59,18 @@ public class AuthServiceImpl implements AuthService {
 
         // Faqat telefon raqam junatilganda
         if (dto.getOtp() == null || dto.getOtp().isEmpty()) {
-            if (!userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+            if (!userRepository.existsByPhoneNumberAndDeletedFalse(dto.getPhoneNumber())) {
                 User user = User.builder()
                         .phoneNumber(dto.getPhoneNumber())
                         .role(RoleName.ROLE_USER)
                         .registered(false)
+                        .deleted(false)
                         .balance(new BigDecimal(0))
                         .language(getLanguage(lang))
                         .build();
                 existingUser = userRepository.save(user);
             } else {
-                existingUser = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+                existingUser = userRepository.findByPhoneNumberAndDeletedFalse(dto.getPhoneNumber()).orElseThrow(
                         () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
                 );
             }
@@ -123,12 +124,12 @@ public class AuthServiceImpl implements AuthService {
         }
 
         // Agar phone number va otp junatilsa, tekshirish
-        User u = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+        User u = userRepository.findByPhoneNumberAndDeletedFalse(dto.getPhoneNumber()).orElseThrow(
                 () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
         );
 
         if (dto.getOtp().equals(u.getOtp())) {
-            User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+            User user = userRepository.findByPhoneNumberAndDeletedFalse(dto.getPhoneNumber()).orElseThrow(
                     () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
             );
 
@@ -147,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<TokenUserDTO> signUp(String lang, SignUpDTO dto) {
-        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber()).orElseThrow(
+        User user = userRepository.findByPhoneNumberAndDeletedFalse(dto.getPhoneNumber()).orElseThrow(
                 () -> RestException.restThrow("Phone number not found", HttpStatus.NOT_FOUND)
         );
         user.setRegistered(true);

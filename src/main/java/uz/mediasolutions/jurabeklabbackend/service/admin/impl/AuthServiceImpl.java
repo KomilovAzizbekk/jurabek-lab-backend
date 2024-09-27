@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResponseEntity<?> signIn(SignInAdminDTO dto) {
-        User user = userRepository.findByUsername(dto.getUsername())
+        User user = userRepository.findByUsernameAndDeletedFalse(dto.getUsername())
                 .orElseThrow(
                         () -> RestException.restThrow("Admin not found", HttpStatus.UNAUTHORIZED)
                 );

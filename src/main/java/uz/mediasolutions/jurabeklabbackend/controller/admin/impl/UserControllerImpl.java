@@ -9,7 +9,7 @@ import uz.mediasolutions.jurabeklabbackend.service.admin.abs.UserService;
 
 import java.util.UUID;
 
-@RestController
+@RestController("adminUserController")
 @RequiredArgsConstructor
 public class UserControllerImpl implements UserController {
 

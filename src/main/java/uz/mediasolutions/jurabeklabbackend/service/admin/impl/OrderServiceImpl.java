@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.mediasolutions.jurabeklabbackend.entity.*;
+import uz.mediasolutions.jurabeklabbackend.enums.NotificationType;
 import uz.mediasolutions.jurabeklabbackend.enums.OrderStatus;
 import uz.mediasolutions.jurabeklabbackend.enums.TransactionStatus;
 import uz.mediasolutions.jurabeklabbackend.enums.TransactionType;
@@ -35,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderProductRepository orderProductRepository;
     private final ProductRepository productRepository;
     private final PharmacyRepository pharmacyRepository;
+    private final NotificationRepository notificationRepository;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String status) {
@@ -83,15 +85,26 @@ public class OrderServiceImpl implements OrderService {
                 () -> RestException.restThrow("Pharmacy not found", HttpStatus.NOT_FOUND)
         );
 
+        BigDecimal income = order.getTotalPrice().divideToIntegralValue(BigDecimal.valueOf(10));
+
+        User user = order.getUser();
+
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setViewed(false);
+        notification.setOrderId(order.getId().toString());
+        notification.setAmount(income);
+
         if (accept) {
+            notification.setType(NotificationType.ORDER_CONFIRMED);
             order.setStatus(OrderStatus.CONFIRMED);
             order.setAcceptedTime(new Timestamp(System.currentTimeMillis()));
         } else {
+            notification.setType(NotificationType.ORDER_CANCELLED);
             order.setStatus(OrderStatus.REJECTED);
         }
         orderRepository.save(order);
-
-        BigDecimal income = order.getTotalPrice().divideToIntegralValue(BigDecimal.valueOf(10));
+        notificationRepository.save(notification);
 
         Transaction transaction = Transaction.builder()
                 .type(TransactionType.INCOME)
@@ -104,7 +117,6 @@ public class OrderServiceImpl implements OrderService {
 
         transactionRepository.save(transaction);
 
-        User user = order.getUser();
         user.setBalance(user.getBalance().add(income));
         userRepository.save(user);
 

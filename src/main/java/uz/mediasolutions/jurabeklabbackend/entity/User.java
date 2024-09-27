@@ -27,7 +27,9 @@ import java.util.List;
 @DynamicUpdate
 public class User extends AbsUUID implements UserDetails {
 
-    @Column(unique = true)
+    //todo Card, Transaction, Order va Notification Userga ulangan
+
+    @Column
     private String phoneNumber;
 
     private String otp;
@@ -45,6 +47,8 @@ public class User extends AbsUUID implements UserDetails {
     private boolean registered;
 
     private BigDecimal balance;
+
+    private boolean deleted;
 
     @Enumerated(EnumType.STRING)
     private RoleName role;

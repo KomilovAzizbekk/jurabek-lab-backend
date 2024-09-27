@@ -39,6 +39,7 @@ public class DataLoader implements CommandLineRunner {
         User superAdmin = User.builder()
                 .role(RoleName.ROLE_SUPER_ADMIN)
                 .username("jurabek")
+                .deleted(false)
                 .password(passwordEncoder.encode("Qwerty123@"))
                 .build();
         userRepository.save(superAdmin);

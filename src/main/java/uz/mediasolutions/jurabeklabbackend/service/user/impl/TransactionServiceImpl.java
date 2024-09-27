@@ -62,6 +62,7 @@ public class TransactionServiceImpl implements TransactionService {
         Card card = Card.builder()
                 .name(dto.getName())
                 .number(dto.getCardNumber())
+                .deleted(false)
                 .user(user)
                 .build();
         cardRepository.save(card);
@@ -118,11 +119,8 @@ public class TransactionServiceImpl implements TransactionService {
             throw RestException.restThrow("Card doesn't belong to this user", HttpStatus.FORBIDDEN);
         }
 
-        try {
-            cardRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
-        } catch (Exception e) {
-            throw RestException.restThrow("Delete failed", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        card.setDeleted(true);
+        cardRepository.save(card);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
     }
 }

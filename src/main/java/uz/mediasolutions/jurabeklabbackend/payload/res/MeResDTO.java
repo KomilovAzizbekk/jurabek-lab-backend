@@ -23,4 +23,6 @@ public class MeResDTO {
 
     private String role;
 
+    private Integer notifications;
+
 }

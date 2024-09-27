@@ -24,7 +24,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             "       c.number\n" +
             "FROM cards c\n" +
             "         LEFT JOIN public.users u ON u.id = c.user_id\n" +
-            "WHERE u.id = :userId", nativeQuery = true)
+            "WHERE u.id = :userId" +
+            "  AND c.deleted = false", nativeQuery = true)
     List<CardDTO> getCardsByUserId(@Param("userId") UUID userId);
 
     @Query(value = "SELECT t.amount,\n" +

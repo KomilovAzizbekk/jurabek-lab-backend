@@ -15,12 +15,15 @@ import java.util.UUID;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    boolean existsByPhoneNumber(String phoneNumber);
+    boolean existsByPhoneNumberAndDeletedFalse(String phoneNumber);
 
-    Optional<User> findByPhoneNumber(String phoneNumber);
+    Optional<User> findByPhoneNumberAndDeletedFalse(String phoneNumber);
 
     @Query(value = "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END\n" +
-            "FROM users u WHERE u.username = :username AND u.id != :id", nativeQuery = true)
+            "FROM users u\n" +
+            "WHERE u.username = :username\n" +
+            "  AND u.id != :id\n" +
+            "  AND u.deleted = false", nativeQuery = true)
     boolean existsByUsernameAndNotId(@Param("username") String username,
                                      @Param("id") UUID id);
 
@@ -34,6 +37,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "    OR u.first_name ILIKE '%' || :search || '%'\n" +
             "    OR u.last_name ILIKE '%' || :search || '%')\n" +
             "  AND u.role = 'ROLE_USER'\n" +
+            "  AND u.deleted = false\n" +
             "ORDER BY u.created_at DESC", nativeQuery = true)
     Page<UserDTO> getAllUsers(Pageable pageable,
                               @Param("search") String search);
@@ -46,14 +50,19 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "    OR u.phone_number ILIKE '%' || :search || '%'\n" +
             "    OR u.role ILIKE '%' || :search || '%')\n" +
             "  AND u.role != 'ROLE_USER'\n" +
+            "  AND u.deleted = false\n" +
             "ORDER BY u.created_at DESC", nativeQuery = true)
     Page<AdminDTO> getAllAdmins(Pageable pageable,
                                 @Param("search") String search);
 
-    boolean existsByUsername(String username);
+    boolean existsByUsernameAndDeletedFalse(String username);
 
-    @Query(value = "SELECT u.created_at FROM users u WHERE u.id = :id", nativeQuery = true)
-    Timestamp getCreatedTime(@Param("id") UUID id);
+    Optional<User> findByUsernameAndDeletedFalse(String username);
 
-    Optional<User> findByUsername(String username);
+    @Query(value = "SELECT u\n" +
+            "FROM users u\n" +
+            "         LEFT JOIN transactions t ON u.id = t.user_id\n" +
+            "WHERE t.id = :transactionId\n", nativeQuery = true)
+    Optional<User> findByTransactionId(@Param("transactionId") UUID transactionId);
+
 }

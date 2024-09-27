@@ -28,6 +28,6 @@ public class Pharmacy extends AbsLongDef {
     @JoinColumn(name = "district_id")
     private District district;
 
-    boolean deleted = false;
+    private boolean deleted;
 
 }

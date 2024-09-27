@@ -22,4 +22,6 @@ public class Card extends AbsUUID {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private boolean deleted;
+
 }
