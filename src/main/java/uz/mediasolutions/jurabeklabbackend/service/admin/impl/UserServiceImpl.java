@@ -113,12 +113,9 @@ public class UserServiceImpl implements UserService {
             throw RestException.restThrow("You cannot delete older SUPER_ADMIN than you", HttpStatus.CONFLICT);
         }
 
-        try {
-            userRepository.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
-        } catch (Exception e) {
-            throw RestException.restThrow(e.getMessage(), HttpStatus.CONFLICT);
-        }
+        toBeDeletedUser.setDeleted(true);
+        userRepository.save(toBeDeletedUser);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
     }
 
     @Override

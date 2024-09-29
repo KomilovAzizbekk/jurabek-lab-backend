@@ -27,8 +27,6 @@ import java.util.List;
 @DynamicUpdate
 public class User extends AbsUUID implements UserDetails {
 
-    //todo Card, Transaction, Order va Notification Userga ulangan
-
     @Column
     private String phoneNumber;
 
