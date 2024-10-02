@@ -96,6 +96,7 @@ public class OrderServiceImpl implements OrderService {
         notification.setAmount(income);
 
         if (accept) {
+            user.setBalance(user.getBalance().add(income));
             notification.setType(NotificationType.ORDER_CONFIRMED);
             order.setStatus(OrderStatus.CONFIRMED);
             order.setAcceptedTime(new Timestamp(System.currentTimeMillis()));
@@ -117,7 +118,6 @@ public class OrderServiceImpl implements OrderService {
 
         transactionRepository.save(transaction);
 
-        user.setBalance(user.getBalance().add(income));
         userRepository.save(user);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
