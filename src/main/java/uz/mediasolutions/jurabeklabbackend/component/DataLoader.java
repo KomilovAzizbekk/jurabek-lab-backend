@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import uz.mediasolutions.jurabeklabbackend.entity.Constants;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
+import uz.mediasolutions.jurabeklabbackend.repository.ConstantsRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.SmsTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.service.user.impl.SmsService;
@@ -19,6 +21,7 @@ public class DataLoader implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final SmsTokenRepository tokenRepository;
     private final SmsService smsService;
+    private final ConstantsRepository constantsRepository;
 
     @Value("${spring.sql.init.mode}")
     private String mode;
@@ -33,6 +36,18 @@ public class DataLoader implements CommandLineRunner {
             smsService.obtainToken();
         }
 
+        addConstants();
+    }
+
+    private void addConstants() {
+        if (!constantsRepository.existsById(1L)) {
+            Constants constants = Constants.builder()
+                    .cashbackPercent(10)
+                    .productPercent(10)
+                    .version("1.0")
+                    .build();
+            constantsRepository.save(constants);
+        }
     }
 
     private void addAdmin() {

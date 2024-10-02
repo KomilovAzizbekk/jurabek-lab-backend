@@ -37,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final PharmacyRepository pharmacyRepository;
     private final NotificationRepository notificationRepository;
+    private final ConstantsRepository constantsRepository;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String status) {
@@ -85,7 +86,12 @@ public class OrderServiceImpl implements OrderService {
                 () -> RestException.restThrow("Pharmacy not found", HttpStatus.NOT_FOUND)
         );
 
-        BigDecimal income = order.getTotalPrice().divideToIntegralValue(BigDecimal.valueOf(10));
+        Constants constants = constantsRepository.findById(1L).orElseThrow(
+                () -> RestException.restThrow("Constants not found", HttpStatus.NOT_FOUND)
+        );
+
+        float f = (float) constants.getCashbackPercent() / 100;
+        BigDecimal income = order.getTotalPrice().multiply(BigDecimal.valueOf(f));
 
         User user = order.getUser();
 

@@ -6,9 +6,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -16,9 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import uz.mediasolutions.jurabeklabbackend.entity.Constants;
 import uz.mediasolutions.jurabeklabbackend.entity.Product;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
+import uz.mediasolutions.jurabeklabbackend.repository.ConstantsRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.ProductRepository;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.ProductService;
 import uz.mediasolutions.jurabeklabbackend.service.common.impl.FileServiceImpl;
@@ -27,9 +26,6 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @Service("adminProductService")
 @RequiredArgsConstructor
@@ -37,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final FileServiceImpl fileService;
+    private final ConstantsRepository constantsRepository;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {
@@ -137,7 +134,12 @@ public class ProductServiceImpl implements ProductService {
         price = price.replaceAll(",", "");
 
         // Narxni ko'paytirish
-        BigDecimal newPrice = new BigDecimal(price).multiply(new BigDecimal("1.2"));
+        Constants constants = constantsRepository.findById(1L).orElseThrow(
+                () -> RestException.restThrow("Constants not found", HttpStatus.NOT_FOUND)
+        );
+
+        float f = (float) constants.getProductPercent() / 100;
+        BigDecimal newPrice = new BigDecimal(price).multiply(BigDecimal.valueOf(f));
 
         if (!name.isEmpty()) {
             Optional<Product> existingProductOpt = productRepository.findByNameAndDeletedFalse(name);
