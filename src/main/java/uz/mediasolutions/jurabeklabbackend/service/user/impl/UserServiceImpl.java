@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (principal.getId() != user.getId()) {
+        if (!principal.getId().equals(user.getId())) {
             throw RestException.restThrow("You do not have permission to edit this user", HttpStatus.FORBIDDEN);
         }
 
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
         User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (principal.getId() != user.getId()) {
+        if (!principal.getId().equals(user.getId())) {
             throw RestException.restThrow("You do not have permission to delete this user", HttpStatus.FORBIDDEN);
         }
         user.setDeleted(true);
