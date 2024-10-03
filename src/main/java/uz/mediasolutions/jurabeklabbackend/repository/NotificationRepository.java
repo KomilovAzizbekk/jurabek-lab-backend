@@ -21,7 +21,8 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             "       n.amount,\n" +
             "       n.card_number    as cardNumber,\n" +
             "       n.card_name      as cardName,\n" +
-            "       n.type\n" +
+            "       n.type,\n" +
+            "       n.created_at     as createdTime\n" +
             "FROM notifications n\n" +
             "         LEFT JOIN users u ON n.user_id = u.id\n" +
             "WHERE u.id = :userId", nativeQuery = true)
