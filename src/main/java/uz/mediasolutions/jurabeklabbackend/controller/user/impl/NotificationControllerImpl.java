@@ -11,7 +11,7 @@ import uz.mediasolutions.jurabeklabbackend.service.user.abs.NotificationService;
 @RequiredArgsConstructor
 public class NotificationControllerImpl implements NotificationController {
 
-    private NotificationService service;
+    private final NotificationService service;
 
     @Override
     public ResponseEntity<Page<?>> getMyNotifications(int page, int size) {

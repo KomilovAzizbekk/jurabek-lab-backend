@@ -36,7 +36,7 @@ public class NotificationServiceImpl implements NotificationService {
                 () -> RestException.restThrow("Notification not found", HttpStatus.NOT_FOUND)
         );
 
-        if (notification.getUser().getId() != user.getId()) {
+        if (!notification.getUser().getId().equals(user.getId())) {
             throw RestException.restThrow("Notification does not belong to you", HttpStatus.FORBIDDEN);
         }
 
