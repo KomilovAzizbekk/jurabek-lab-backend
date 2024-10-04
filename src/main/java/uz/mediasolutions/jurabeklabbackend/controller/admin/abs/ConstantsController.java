@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import uz.mediasolutions.jurabeklabbackend.payload.req.ConstantsDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
-@RequestMapping(Rest.BASE_PATH + "/admin/constants")
+@RequestMapping(Rest.BASE_PATH + "admin/constants")
 public interface ConstantsController {
 
     @GetMapping("/get")
