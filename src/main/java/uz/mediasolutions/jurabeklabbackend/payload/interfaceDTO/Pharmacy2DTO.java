@@ -8,4 +8,6 @@ public interface Pharmacy2DTO {
 
     String getAddress();
 
+    String getInn();
+
 }

@@ -37,7 +37,8 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
 
     @Query(value = "SELECT p.id,\n" +
             "       p.name,\n" +
-            "       p.address\n" +
+            "       p.address,\n" +
+            "       p.inn\n" +
             "FROM pharmacies p\n" +
             "WHERE p.district_id = :districtId\n" +
             "  AND p.deleted = false\n" +

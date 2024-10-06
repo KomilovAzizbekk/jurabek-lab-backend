@@ -60,6 +60,7 @@ public class PharmacyServiceImpl implements PharmacyService {
                 .address(dto.getAddress())
                 .build();
         pharmacyRepository.save(pharmacy);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
     }
 }

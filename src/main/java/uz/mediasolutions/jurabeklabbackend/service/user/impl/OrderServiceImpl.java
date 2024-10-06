@@ -73,6 +73,11 @@ public class OrderServiceImpl implements OrderService {
                 () -> new RestException("Pharmacy not found", HttpStatus.NOT_FOUND)
         );
 
+        if (dto.getInn() != null) {
+            pharmacy.setInn(dto.getInn());
+            pharmacyRepository.save(pharmacy);
+        }
+
         Order order = Order.builder()
                 .user(user)
                 .totalPrice(dto.getTotalPrice())

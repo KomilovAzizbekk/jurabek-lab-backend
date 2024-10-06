@@ -25,6 +25,8 @@ public class OrderReqDTO {
     @Pattern(regexp = Rest.PHONE_NUMBER_REGEX)
     private String pharmacyPhoneNumber;
 
+    private String inn;
+
     @Valid
     @NotNull
     private List<OrderProductDTO> products;
