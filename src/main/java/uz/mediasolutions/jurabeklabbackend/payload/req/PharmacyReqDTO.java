@@ -19,4 +19,10 @@ public class PharmacyReqDTO {
     @NotBlank
     private String address;
 
+    @NotNull
+    @NotBlank
+    private String inn;
+
+    @NotNull
+    private Long districtId;
 }

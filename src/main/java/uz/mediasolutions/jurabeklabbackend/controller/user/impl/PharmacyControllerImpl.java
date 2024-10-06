@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import uz.mediasolutions.jurabeklabbackend.controller.user.abs.PharmacyController;
 import uz.mediasolutions.jurabeklabbackend.entity.Region;
+import uz.mediasolutions.jurabeklabbackend.payload.req.PharmacyReqDTO;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.PharmacyService;
 
 import java.util.List;
@@ -28,5 +29,10 @@ public class PharmacyControllerImpl implements PharmacyController {
     @Override
     public ResponseEntity<List<?>> getAllPharmacies(Long districtId, String search) {
         return service.getAllPharmacies(districtId, search);
+    }
+
+    @Override
+    public ResponseEntity<?> addPharmacy(PharmacyReqDTO dto) {
+        return service.addPharmacy(dto);
     }
 }

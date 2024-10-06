@@ -6,13 +6,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import uz.mediasolutions.jurabeklabbackend.entity.Region;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.DistrictDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Pharmacy2DTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.PharmacyReqDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.util.List;
@@ -42,5 +40,9 @@ public interface PharmacyController {
     })
     ResponseEntity<List<?>> getAllPharmacies(@PathVariable Long districtId,
                                              @RequestParam(required = false) String search);
+
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    ResponseEntity<?> addPharmacy(@RequestBody PharmacyReqDTO dto);
 
 }

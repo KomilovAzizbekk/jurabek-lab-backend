@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.PharmacyController;
-import uz.mediasolutions.jurabeklabbackend.payload.req.PharmacyReqDTO;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.PharmacyService;
 
 @RestController("adminPharmacyController")

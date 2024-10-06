@@ -21,6 +21,7 @@ import uz.mediasolutions.jurabeklabbackend.secret.JwtAuthenticationEntryPoint;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -58,10 +59,11 @@ public class SecurityConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://jurabek-lab-admin.netlify.app", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"));
+//        configuration.setAllowedOrigins(Arrays.asList("https://jurabek-lab-admin.netlify.app", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"));
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "x-auth-token", "Origin", "Accept"));
-        configuration.setAllowCredentials(true);
+//        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
