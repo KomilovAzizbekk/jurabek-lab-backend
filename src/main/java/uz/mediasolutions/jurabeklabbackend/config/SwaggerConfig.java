@@ -21,8 +21,11 @@ public class SwaggerConfig {
                 .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new io.swagger.v3.oas.models.Components()
                         .addSecuritySchemes("bearerAuth",
-                                new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")));
+                                new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
+                .addServersItem(new io.swagger.v3.oas.models.servers.Server()
+                        .url("https://jurabek-lab.medias.uz/api"));
     }
+
 
     @Bean
     public GroupedOpenApi userApi() {
