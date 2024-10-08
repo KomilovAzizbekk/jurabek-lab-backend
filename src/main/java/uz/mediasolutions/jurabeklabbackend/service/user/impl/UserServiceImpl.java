@@ -52,6 +52,6 @@ public class UserServiceImpl implements UserService {
         }
         user.setDeleted(true);
         userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Rest.DELETED);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Rest.DELETED);
     }
 }

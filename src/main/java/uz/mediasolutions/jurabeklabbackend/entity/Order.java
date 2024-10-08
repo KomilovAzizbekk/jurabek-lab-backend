@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 @DynamicUpdate
 public class Order extends AbsLongDef {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 

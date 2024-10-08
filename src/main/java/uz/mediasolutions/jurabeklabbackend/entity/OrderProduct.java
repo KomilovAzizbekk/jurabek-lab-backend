@@ -14,7 +14,7 @@ import uz.mediasolutions.jurabeklabbackend.entity.template.AbsLongDef;
 @EqualsAndHashCode(callSuper = true)
 public class OrderProduct extends AbsLongDef {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
 

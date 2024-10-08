@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @DynamicInsert
 public class Transaction extends AbsUUID {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -33,7 +33,7 @@ public class Transaction extends AbsUUID {
 
     private String pharmacyName; //Statik bo'lishi uchun
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "card_id")
     private Card card;
 

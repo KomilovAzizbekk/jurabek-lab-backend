@@ -24,7 +24,7 @@ public class Pharmacy extends AbsLongDef {
     @Column(nullable = false)
     private String address;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "district_id")
     private District district;
 
