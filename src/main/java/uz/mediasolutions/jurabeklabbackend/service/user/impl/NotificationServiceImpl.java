@@ -11,6 +11,7 @@ import uz.mediasolutions.jurabeklabbackend.entity.Notification;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.NotificationDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.res.NotificationResDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.NotificationRepository;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.NotificationService;
 
@@ -41,7 +42,20 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         notification.setViewed(true);
-        notificationRepository.save(notification);
-        return ResponseEntity.ok(notification);
+        Notification saved = notificationRepository.save(notification);
+
+        NotificationResDTO dto = NotificationResDTO.builder()
+                .id(saved.getId())
+                .cardNumber(saved.getCardNumber())
+                .amount(saved.getAmount())
+                .viewed(saved.isViewed())
+                .orderId(saved.getOrderId())
+                .transactionId(saved.getTransactionId())
+                .cardName(saved.getCardName())
+                .type(saved.getType().name())
+                .createdTime(saved.getCreatedAt())
+                .build();
+
+        return ResponseEntity.ok(dto);
     }
 }
