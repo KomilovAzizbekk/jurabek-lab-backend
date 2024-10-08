@@ -41,19 +41,21 @@ public class NotificationServiceImpl implements NotificationService {
             throw RestException.restThrow("Notification does not belong to you", HttpStatus.FORBIDDEN);
         }
 
-        notification.setViewed(true);
-        Notification saved = notificationRepository.save(notification);
+        if (!notification.isViewed()) {
+            notification.setViewed(true);
+            notification = notificationRepository.save(notification);
+        }
 
         NotificationResDTO dto = NotificationResDTO.builder()
-                .id(saved.getId())
-                .cardNumber(saved.getCardNumber())
-                .amount(saved.getAmount())
-                .viewed(saved.isViewed())
-                .orderId(saved.getOrderId())
-                .transactionId(saved.getTransactionId())
-                .cardName(saved.getCardName())
-                .type(saved.getType().name())
-                .createdTime(saved.getCreatedAt())
+                .id(notification.getId())
+                .cardNumber(notification.getCardNumber())
+                .amount(notification.getAmount())
+                .viewed(notification.isViewed())
+                .orderId(notification.getOrderId())
+                .transactionId(notification.getTransactionId())
+                .cardName(notification.getCardName())
+                .type(notification.getType().name())
+                .createdTime(notification.getCreatedAt())
                 .build();
 
         return ResponseEntity.ok(dto);
