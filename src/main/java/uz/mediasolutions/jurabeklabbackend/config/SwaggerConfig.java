@@ -23,7 +23,7 @@ public class SwaggerConfig {
                         .addSecuritySchemes("bearerAuth",
                                 new SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")))
                 .addServersItem(new io.swagger.v3.oas.models.servers.Server()
-                        .url("https://jurabek-lab.medias.uz/api"));
+                        .url("https://jurabek-lab.medias.uz"));
     }
 
 
