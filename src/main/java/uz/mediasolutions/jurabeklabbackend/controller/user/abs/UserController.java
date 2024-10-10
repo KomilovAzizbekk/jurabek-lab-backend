@@ -14,7 +14,7 @@ public interface UserController {
     @PatchMapping("/edit/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     ResponseEntity<?> edit(@PathVariable UUID id,
-                           @RequestBody ProfileReqDTO dto);
+                           @RequestBody @Valid ProfileReqDTO dto);
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
