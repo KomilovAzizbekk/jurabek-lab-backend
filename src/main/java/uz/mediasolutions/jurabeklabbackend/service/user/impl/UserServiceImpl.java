@@ -34,8 +34,8 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName())
-        userReposito1ry.save(user);
+        user.setLastName(dto.getLastName());
+        userRepository.save(user);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
 

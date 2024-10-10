@@ -12,7 +12,7 @@ import java.util.UUID;
 @RequestMapping(Rest.BASE_PATH + "app/user-profile")
 public interface UserController {
 
-    @PatchMapping("/edit/{id}")
+    @PutMapping("/edit/{id}")
     @PreAuthorize("hasRole('ROLE_USER')")
     ResponseEntity<?> edit(@PathVariable UUID id,
                            @RequestBody @Valid ProfileReqDTO dto);
