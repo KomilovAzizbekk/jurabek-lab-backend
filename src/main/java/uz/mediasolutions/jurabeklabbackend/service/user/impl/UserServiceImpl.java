@@ -33,9 +33,9 @@ public class UserServiceImpl implements UserService {
             throw RestException.restThrow("You do not have permission to edit this user", HttpStatus.FORBIDDEN);
         }
 
-        Optional.ofNullable(dto.getFirstName()).ifPresent(user::setFirstName);
-        Optional.ofNullable(dto.getLastName()).ifPresent(user::setLastName);
-        userRepository.save(user);
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName())
+        userReposito1ry.save(user);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
 
