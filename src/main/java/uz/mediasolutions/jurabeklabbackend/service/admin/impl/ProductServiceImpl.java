@@ -17,6 +17,7 @@ import uz.mediasolutions.jurabeklabbackend.entity.Constants;
 import uz.mediasolutions.jurabeklabbackend.entity.Product;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.ImageDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.ConstantsRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.ProductRepository;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.ProductService;
@@ -72,15 +73,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseEntity<?> editImage(Long id, String imageUrl) {
+    public ResponseEntity<?> editImage(Long id, ImageDTO dto) {
         Product product = productRepository.findByIdAndDeletedFalse(id).orElseThrow(
                 () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
         );
+        String imageUrl = dto.getImageUrl();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             try {
                 fileService.deleteFile(product.getImageUrl());
             } catch (Exception e) {
-                throw RestException.restThrow("Image delete failed", HttpStatus.INTERNAL_SERVER_ERROR);
+                System.out.println("Error deleting image");
             }
             product.setImageUrl(imageUrl);
             productRepository.save(product);

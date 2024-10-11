@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.ImageDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "admin/products")
@@ -32,7 +33,7 @@ public interface ProductController {
 
     @PatchMapping("/edit-image/{id}")
     ResponseEntity<?> editImage(@PathVariable("id") Long id,
-                                @RequestBody @Valid String imageUrl);
+                                @RequestBody @Valid ImageDTO dto);
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")

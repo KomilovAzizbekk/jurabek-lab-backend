@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.controller.admin.abs.ProductController;
+import uz.mediasolutions.jurabeklabbackend.payload.req.ImageDTO;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.ProductService;
 
 @RestController("adminProductController")
@@ -24,8 +25,8 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public ResponseEntity<?> editImage(Long id, String imageUrl) {
-        return service.editImage(id, imageUrl);
+    public ResponseEntity<?> editImage(Long id, ImageDTO dto) {
+        return service.editImage(id, dto);
     }
 
     @Override
