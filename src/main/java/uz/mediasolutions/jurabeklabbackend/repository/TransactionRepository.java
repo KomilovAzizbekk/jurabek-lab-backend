@@ -46,7 +46,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
                                                       @Param("type") String type,
                                                       Pageable pageable);
 
-    @Query(value = "SELECT c.number       as card,\n" +
+    @Query(value = "SELECT t.id, c.number       as card,\n" +
             "       t.amount,\n" +
             "       t.number,\n" +
             "       t.status,\n" +
