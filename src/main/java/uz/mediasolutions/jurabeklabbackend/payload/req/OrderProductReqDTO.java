@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class OrderProductDTO {
+public class OrderProductReqDTO {
 
     @NotNull
     private Long productId;

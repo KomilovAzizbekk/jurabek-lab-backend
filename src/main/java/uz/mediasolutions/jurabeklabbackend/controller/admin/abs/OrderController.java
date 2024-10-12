@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,13 +37,13 @@ public interface OrderController {
                             schema = @Schema(implementation = OrderProductDTO.class))})
     })
     ResponseEntity<Page<?>> getAllOrderProducts(@PathVariable Long orderId,
-                                           @RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
-                                           @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size);
+                                                @RequestParam(defaultValue = Rest.DEFAULT_PAGE_NUMBER) int page,
+                                                @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size);
 
     @PutMapping("/edit/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     ResponseEntity<?> edit(@PathVariable Long id,
-                           @RequestBody OrderReq2DTO dto);
+                           @RequestBody @Valid OrderReq2DTO dto);
 
     @PatchMapping("/accept/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")

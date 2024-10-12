@@ -23,6 +23,6 @@ public class OrderReq2DTO {
 
     @NotNull
     @Valid
-    private List<OrderProductDTO> products;
+    private List<OrderProductReqDTO> products;
 
 }

@@ -29,7 +29,7 @@ public class OrderReqDTO {
 
     @Valid
     @NotNull
-    private List<OrderProductDTO> products;
+    private List<OrderProductReqDTO> products;
 
     @NotNull
     private BigDecimal totalPrice;

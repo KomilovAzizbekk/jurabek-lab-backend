@@ -15,6 +15,7 @@ import uz.mediasolutions.jurabeklabbackend.enums.TransactionType;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Order2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderProductDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.OrderProductReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReq2DTO;
 import uz.mediasolutions.jurabeklabbackend.repository.*;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.OrderService;
@@ -51,25 +52,41 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> RestException.restThrow("Order not found", HttpStatus.NOT_FOUND)
         );
-        Optional.ofNullable(dto.getPharmacyPhoneNumber()).ifPresent(order::setPharmacyPhoneNumber);
+        order.setPharmacyPhoneNumber(dto.getPharmacyPhoneNumber());
         orderRepository.save(order);
 
         List<OrderProduct> orderProducts = new ArrayList<>();
 
-        for (uz.mediasolutions.jurabeklabbackend.payload.req.OrderProductDTO product : dto.getProducts()) {
-            OrderProduct orderProduct = orderProductRepository.findByOrderId(id).orElseThrow(
-                    () -> RestException.restThrow("Order Product not found", HttpStatus.NOT_FOUND)
+        List<OrderProduct> existedOrderProducts = orderProductRepository.findAllByOrderId(id);
+
+        for (OrderProductReqDTO product : dto.getProducts()) {
+            boolean existed = false;
+            OrderProduct op = new OrderProduct();
+            Product product1 = productRepository.findByIdAndDeletedFalse(product.getProductId()).orElseThrow(
+                    () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
             );
 
-            Optional.ofNullable(product.getProductId()).ifPresent(productId -> {
-                Product product1 = productRepository.findByIdAndDeletedFalse(productId).orElseThrow(
-                        () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
-                );
-                orderProduct.setProductId(product1.getId());
-                orderProduct.setProductName(product1.getName());
-            });
-            Optional.ofNullable(product.getQuantity()).ifPresent(orderProduct::setQuantity);
-            orderProducts.add(orderProduct);
+            for (OrderProduct existedOrderProduct : existedOrderProducts) {
+                if (existedOrderProduct.getProductId().equals(product1.getId())) {
+                    existed = true;
+                    op = existedOrderProduct;
+                } else {
+                    orderProductRepository.deleteById(existedOrderProduct.getId());
+                }
+            }
+
+            if (existed) {
+                op.setQuantity(product.getQuantity());
+                orderProducts.add(op);
+            } else {
+                OrderProduct orderProduct = OrderProduct.builder()
+                        .order(order)
+                        .productId(product1.getId())
+                        .productName(product1.getName())
+                        .quantity(product.getQuantity())
+                        .build();
+                orderProducts.add(orderProduct);
+            }
         }
         orderProductRepository.saveAll(orderProducts);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);

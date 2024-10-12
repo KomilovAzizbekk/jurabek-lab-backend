@@ -12,7 +12,7 @@ import uz.mediasolutions.jurabeklabbackend.entity.*;
 import uz.mediasolutions.jurabeklabbackend.enums.OrderStatus;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderDTO;
-import uz.mediasolutions.jurabeklabbackend.payload.req.OrderProductDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.OrderProductReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReqDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.OrderProductRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.OrderRepository;
@@ -89,10 +89,10 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        List<OrderProductDTO> products = dto.getProducts();
+        List<OrderProductReqDTO> products = dto.getProducts();
         List<OrderProduct> orderProducts = new ArrayList<>();
 
-        for (OrderProductDTO product : products) {
+        for (OrderProductReqDTO product : products) {
 
             Product product1 = productRepository.findById(product.getProductId()).orElseThrow(
                     () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
