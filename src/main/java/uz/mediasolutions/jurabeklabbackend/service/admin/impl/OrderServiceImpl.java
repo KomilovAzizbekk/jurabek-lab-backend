@@ -59,7 +59,9 @@ public class OrderServiceImpl implements OrderService {
         }
         BigDecimal totalPrice = new BigDecimal(0);
 
+        // O'zgartiriladigan OrderProductlar ro'yxati
         List<OrderProduct> orderProducts = new ArrayList<>();
+        List<OrderProduct> existedOrderProducts = orderProductRepository.findAllByOrderId(id);
 
         // DTO ichidagi mahsulotlar ustida aylanish
         for (OrderProductReqDTO product : dto.getProducts()) {
@@ -68,13 +70,24 @@ public class OrderServiceImpl implements OrderService {
 
             totalPrice = totalPrice.add(product1.getPrice());
 
-            OrderProduct orderProduct = OrderProduct.builder()
-                    .order(order)
-                    .productId(product1.getId())
-                    .productName(product1.getName())
-                    .quantity(product.getQuantity())
-                    .build();
-            orderProducts.add(orderProduct);
+            // OrderProduct mavjudligini tekshirish
+            OrderProduct op = existedOrderProducts.stream()
+                    .filter(existedOrderProduct -> existedOrderProduct.getProductId().equals(product1.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (op != null) { // Agar mavjud bo'lsa
+                op.setQuantity(product.getQuantity());
+                orderProducts.add(op); // O'zgartirilgan instansiyani qo'shamiz
+            } else { // Yangi OrderProduct yaratish
+                OrderProduct orderProduct = OrderProduct.builder()
+                        .order(order)
+                        .productId(product1.getId())
+                        .productName(product1.getName())
+                        .quantity(product.getQuantity())
+                        .build();
+                orderProducts.add(orderProduct);
+            }
         }
 
         // Orderni tahrirlash
