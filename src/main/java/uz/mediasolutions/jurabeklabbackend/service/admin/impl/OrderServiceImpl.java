@@ -89,10 +89,8 @@ public class OrderServiceImpl implements OrderService {
                 orderProducts.add(orderProduct);
             }
         }
-
-        orderProductRepository.deleteAll(leftOrderProducts);
-
         orderProductRepository.saveAll(orderProducts);
+        orderProductRepository.deleteAll(leftOrderProducts);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
 
