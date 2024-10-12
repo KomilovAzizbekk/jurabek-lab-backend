@@ -56,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         List<OrderProduct> orderProducts = new ArrayList<>();
+        List<OrderProduct> leftOrderProducts = orderProductRepository.findAllByOrderId(id);
         List<OrderProduct> existedOrderProducts = orderProductRepository.findAllByOrderId(id);
 
         for (OrderProductReqDTO product : dto.getProducts()) {
@@ -70,6 +71,7 @@ public class OrderServiceImpl implements OrderService {
                 if (existedOrderProduct.getProductId().equals(product1.getId())) {
                     existed = true;
                     op = existedOrderProduct;
+                    leftOrderProducts.remove(op);
                     break; // Topilganda davom etishni to'xtating
                 }
             }
@@ -88,12 +90,7 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
-        // O'chirilgan orderProductlarni o'chirish
-        for (OrderProduct existedOrderProduct : existedOrderProducts) {
-            if (orderProducts.stream().noneMatch(op -> op.getId().equals(existedOrderProduct.getId()))) {
-                orderProductRepository.deleteById(existedOrderProduct.getId());
-            }
-        }
+        orderProductRepository.deleteAll(leftOrderProducts);
 
         orderProductRepository.saveAll(orderProducts);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
