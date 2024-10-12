@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service("adminOrderService")
 @RequiredArgsConstructor
@@ -49,37 +50,34 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public ResponseEntity<?> edit(Long id, OrderReq2DTO dto) {
+        // Buyurtma mavjudligini tekshirish
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> RestException.restThrow("Order not found", HttpStatus.NOT_FOUND)
         );
+
+        // Order malumotlarini yangilash
         order.setPharmacyPhoneNumber(dto.getPharmacyPhoneNumber());
         orderRepository.save(order);
 
+        // O'zgartiriladigan OrderProductlar ro'yxati
         List<OrderProduct> orderProducts = new ArrayList<>();
-        List<OrderProduct> leftOrderProducts = orderProductRepository.findAllByOrderId(id);
         List<OrderProduct> existedOrderProducts = orderProductRepository.findAllByOrderId(id);
 
+        // DTO ichidagi mahsulotlar ustida aylanish
         for (OrderProductReqDTO product : dto.getProducts()) {
-            boolean existed = false;
-            OrderProduct op = null; // O'zgaruvchini null bilan boshlash
+            Product product1 = productRepository.findByIdAndDeletedFalse(product.getProductId())
+                    .orElseThrow(() -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND));
 
-            Product product1 = productRepository.findByIdAndDeletedFalse(product.getProductId()).orElseThrow(
-                    () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
-            );
+            // OrderProduct mavjudligini tekshirish
+            OrderProduct op = existedOrderProducts.stream()
+                    .filter(existedOrderProduct -> existedOrderProduct.getProductId().equals(product1.getId()))
+                    .findFirst()
+                    .orElse(null);
 
-            for (OrderProduct existedOrderProduct : existedOrderProducts) {
-                if (existedOrderProduct.getProductId().equals(product1.getId())) {
-                    existed = true;
-                    op = existedOrderProduct;
-                    leftOrderProducts.remove(op);
-                    break; // Topilganda davom etishni to'xtating
-                }
-            }
-
-            if (existed) {
+            if (op != null) { // Agar mavjud bo'lsa
                 op.setQuantity(product.getQuantity());
-                orderProducts.add(op); // O'chirilmagan op ni qo'shamiz
-            } else {
+                orderProducts.add(op); // O'zgartirilgan instansiyani qo'shamiz
+            } else { // Yangi OrderProduct yaratish
                 OrderProduct orderProduct = OrderProduct.builder()
                         .order(order)
                         .productId(product1.getId())
@@ -89,10 +87,20 @@ public class OrderServiceImpl implements OrderService {
                 orderProducts.add(orderProduct);
             }
         }
+
+        // Yangi OrderProductlarni saqlash
         orderProductRepository.saveAll(orderProducts);
+
+        // O'chirilgan OrderProductlarni aniqlash va o'chirish
+        List<OrderProduct> leftOrderProducts = existedOrderProducts.stream()
+                .filter(existedOrderProduct -> !orderProducts.contains(existedOrderProduct))
+                .collect(Collectors.toList());
+
         orderProductRepository.deleteAll(leftOrderProducts);
+
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
+
 
 
     @Override
