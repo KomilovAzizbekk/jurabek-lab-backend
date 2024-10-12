@@ -54,53 +54,38 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id).orElseThrow(
                 () -> RestException.restThrow("Order not found", HttpStatus.NOT_FOUND)
         );
+        if (!order.getStatus().equals(OrderStatus.SENT)) {
+            throw RestException.restThrow("You cannot edit ACCEPTED or REJECTED orders", HttpStatus.BAD_REQUEST);
+        }
+        BigDecimal totalPrice = new BigDecimal(0);
 
-        // Order malumotlarini yangilash
-        order.setPharmacyPhoneNumber(dto.getPharmacyPhoneNumber());
-        orderRepository.save(order);
-
-        // O'zgartiriladigan OrderProductlar ro'yxati
         List<OrderProduct> orderProducts = new ArrayList<>();
-        List<OrderProduct> existedOrderProducts = orderProductRepository.findAllByOrderId(id);
 
         // DTO ichidagi mahsulotlar ustida aylanish
         for (OrderProductReqDTO product : dto.getProducts()) {
             Product product1 = productRepository.findByIdAndDeletedFalse(product.getProductId())
                     .orElseThrow(() -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND));
 
-            // OrderProduct mavjudligini tekshirish
-            OrderProduct op = existedOrderProducts.stream()
-                    .filter(existedOrderProduct -> existedOrderProduct.getProductId().equals(product1.getId()))
-                    .findFirst()
-                    .orElse(null);
+            totalPrice = totalPrice.add(product1.getPrice());
 
-            if (op != null) { // Agar mavjud bo'lsa
-                op.setQuantity(product.getQuantity());
-                orderProducts.add(op); // O'zgartirilgan instansiyani qo'shamiz
-            } else { // Yangi OrderProduct yaratish
-                OrderProduct orderProduct = OrderProduct.builder()
-                        .order(order)
-                        .productId(product1.getId())
-                        .productName(product1.getName())
-                        .quantity(product.getQuantity())
-                        .build();
-                orderProducts.add(orderProduct);
-            }
+            OrderProduct orderProduct = OrderProduct.builder()
+                    .order(order)
+                    .productId(product1.getId())
+                    .productName(product1.getName())
+                    .quantity(product.getQuantity())
+                    .build();
+            orderProducts.add(orderProduct);
         }
+
+        // Orderni tahrirlash
+        order.setTotalPrice(totalPrice);
+        order.setPharmacyPhoneNumber(dto.getPharmacyPhoneNumber());
+        orderRepository.save(order);
 
         // Yangi OrderProductlarni saqlash
         orderProductRepository.saveAll(orderProducts);
-
-//        // O'chirilgan OrderProductlarni aniqlash va o'chirish
-//        List<OrderProduct> leftOrderProducts = existedOrderProducts.stream()
-//                .filter(existedOrderProduct -> !orderProducts.contains(existedOrderProduct))
-//                .collect(Collectors.toList());
-
-//        orderProductRepository.deleteAll(leftOrderProducts);
-
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
-
 
 
     @Override
