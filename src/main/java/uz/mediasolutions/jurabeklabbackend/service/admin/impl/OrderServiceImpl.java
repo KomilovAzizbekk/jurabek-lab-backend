@@ -91,12 +91,12 @@ public class OrderServiceImpl implements OrderService {
         // Yangi OrderProductlarni saqlash
         orderProductRepository.saveAll(orderProducts);
 
-        // O'chirilgan OrderProductlarni aniqlash va o'chirish
-        List<OrderProduct> leftOrderProducts = existedOrderProducts.stream()
-                .filter(existedOrderProduct -> !orderProducts.contains(existedOrderProduct))
-                .collect(Collectors.toList());
+//        // O'chirilgan OrderProductlarni aniqlash va o'chirish
+//        List<OrderProduct> leftOrderProducts = existedOrderProducts.stream()
+//                .filter(existedOrderProduct -> !orderProducts.contains(existedOrderProduct))
+//                .collect(Collectors.toList());
 
-        orderProductRepository.deleteAll(leftOrderProducts);
+//        orderProductRepository.deleteAll(leftOrderProducts);
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
