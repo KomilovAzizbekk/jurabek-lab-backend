@@ -56,12 +56,12 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         List<OrderProduct> orderProducts = new ArrayList<>();
-
         List<OrderProduct> existedOrderProducts = orderProductRepository.findAllByOrderId(id);
 
         for (OrderProductReqDTO product : dto.getProducts()) {
             boolean existed = false;
-            OrderProduct op = new OrderProduct();
+            OrderProduct op = null; // O'zgaruvchini null bilan boshlash
+
             Product product1 = productRepository.findByIdAndDeletedFalse(product.getProductId()).orElseThrow(
                     () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
             );
@@ -70,14 +70,13 @@ public class OrderServiceImpl implements OrderService {
                 if (existedOrderProduct.getProductId().equals(product1.getId())) {
                     existed = true;
                     op = existedOrderProduct;
-                } else {
-                    orderProductRepository.deleteById(existedOrderProduct.getId());
+                    break; // Topilganda davom etishni to'xtating
                 }
             }
 
             if (existed) {
                 op.setQuantity(product.getQuantity());
-                orderProducts.add(op);
+                orderProducts.add(op); // O'chirilmagan op ni qo'shamiz
             } else {
                 OrderProduct orderProduct = OrderProduct.builder()
                         .order(order)
@@ -88,9 +87,18 @@ public class OrderServiceImpl implements OrderService {
                 orderProducts.add(orderProduct);
             }
         }
+
+        // O'chirilgan orderProductlarni o'chirish
+        for (OrderProduct existedOrderProduct : existedOrderProducts) {
+            if (orderProducts.stream().noneMatch(op -> op.getId().equals(existedOrderProduct.getId()))) {
+                orderProductRepository.deleteById(existedOrderProduct.getId());
+            }
+        }
+
         orderProductRepository.saveAll(orderProducts);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
+
 
     @Override
     @Transactional
