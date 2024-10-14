@@ -1,6 +1,5 @@
 package uz.mediasolutions.jurabeklabbackend.service.common.impl;
 
-import jakarta.activation.MimeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -15,14 +14,12 @@ import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.service.common.abs.FileService;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -47,15 +44,17 @@ public class FileServiceImpl implements FileService {
                 Files.createDirectories(path);
             }
 
+            // UUID yaratish va fayl nomini kengaytmasi bilan birlashtirish
+            String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+            String extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+            String uuidFilename = UUID.randomUUID().toString() + extension;
+
             // Faylni yuklash va papkaga saqlash
-            Path filePath = path.resolve(Objects.requireNonNull(file.getOriginalFilename()));
+            Path filePath = path.resolve(uuidFilename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Fayl nomini URL-kodlash (Krillcha belgilar uchun)
-            String encodedFilename = URLEncoder.encode(file.getOriginalFilename(), StandardCharsets.UTF_8);
-
             // URL yaratish
-            String fileUrl = baseUrl + "/api/files/get/" + encodedFilename;
+            String fileUrl = baseUrl + "/api/files/get/" + uuidFilename;
 
             return ResponseEntity.status(HttpStatus.CREATED).body(fileUrl);
 
@@ -65,20 +64,19 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public ResponseEntity<?> getFile(String filename) {
+    public ResponseEntity<?> getFile(String uuidFilename) {
         try {
-            // Faylni saqlangan joydan olish
-            Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
+            // UUID faylni saqlangan joydan olish
+            Path filePath = Paths.get(uploadDir).resolve(uuidFilename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found.");
             }
 
             // Faylning MIME turini aniqlash
             String contentType = Files.probeContentType(filePath);
             if (contentType == null) {
-                // MIME turini aniqlay olmasak, standart turni ishlatamiz
                 contentType = "application/octet-stream";
             }
 
@@ -89,15 +87,13 @@ public class FileServiceImpl implements FileService {
                     .body(resource);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error retrieving file.");
         }
     }
 
-    public void deleteFile(String imageUrl) throws IOException {
-        if (imageUrl.contains("/")) {
-            String imagePath = uploadDir + imageUrl.substring(imageUrl.lastIndexOf('/'));
-            Path path = Paths.get(imagePath);
-            Files.deleteIfExists(path);
-        }
+    public void deleteFile(String uuidFilename) throws IOException {
+        // Fayl yo'lini aniqlash va uni o‘chirish
+        Path filePath = Paths.get(uploadDir).resolve(uuidFilename);
+        Files.deleteIfExists(filePath);
     }
 }
