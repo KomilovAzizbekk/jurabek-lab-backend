@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uz.mediasolutions.jurabeklabbackend.entity.Constants;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.enums.RoleName;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
@@ -14,6 +15,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.AdminDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.UserDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.AdminReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.MeResDTO;
+import uz.mediasolutions.jurabeklabbackend.repository.ConstantsRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.NotificationRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.UserService;
@@ -30,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final NotificationRepository notificationRepository;
+    private final ConstantsRepository constantsRepository;
 
     @Override
     public ResponseEntity<?> getAllUsers(int page, int size, String search) {
@@ -125,6 +128,8 @@ public class UserServiceImpl implements UserService {
 
         int notifications = notificationRepository.countAllByUserIdAndViewedFalse(user.getId());
 
+        Constants constants = constantsRepository.findById(1L).orElse(null);
+
         MeResDTO me = MeResDTO.builder()
                 .id(user.getId())
                 .username(user.getUsername())
@@ -133,6 +138,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole().name())
                 .notifications(notifications)
+                .version(constants != null ? constants.getVersion() : null)
                 .build();
 
         return ResponseEntity.ok(me);

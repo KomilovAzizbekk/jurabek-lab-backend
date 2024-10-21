@@ -25,4 +25,6 @@ public class MeResDTO {
 
     private Integer notifications;
 
+    private String version;
+
 }

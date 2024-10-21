@@ -85,6 +85,7 @@ public class ProductServiceImpl implements ProductService {
                 System.out.println("Error deleting image");
             }
             product.setImageUrl(imageUrl);
+
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
         }
