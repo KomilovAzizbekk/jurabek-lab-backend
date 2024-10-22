@@ -105,7 +105,7 @@ public class ProductServiceImpl implements ProductService {
                 if (row.getRowNum() != 0) {
                     String name = getCellValue(row, 1);
 
-                    if (!processedProducts.contains(name) && !productRepository.existsByNameAndDeletedFalse(name)) {
+                    if (!processedProducts.contains(name)) {
                         processedProducts.add(name);
                         Product product = processRow(row);
                         if (product != null) {
@@ -116,6 +116,9 @@ public class ProductServiceImpl implements ProductService {
             }
 
             if (!productsToSave.isEmpty()) {
+                for (Product product : productsToSave) {
+                    System.out.println(product.getName());
+                }
                 productRepository.saveAll(productsToSave);
             }
 
@@ -142,9 +145,11 @@ public class ProductServiceImpl implements ProductService {
         );
 
         float f = (float) constants.getProductPercent() / 100;
-        BigDecimal newPrice = new BigDecimal(price).multiply(BigDecimal.valueOf(f));
+        BigDecimal newPrice = new BigDecimal(price).multiply(BigDecimal.valueOf(f + 1));
 
-        if (!name.isEmpty()) {
+        if (name.isEmpty()) {
+            return null;
+        } else {
             Optional<Product> existingProductOpt = productRepository.findByNameAndDeletedFalse(name);
             if (existingProductOpt.isPresent()) {
                 // Mahsulot mavjud bo'lsa, narxni yangilash
@@ -160,7 +165,6 @@ public class ProductServiceImpl implements ProductService {
                         .build();
             }
         }
-        return null;
     }
 
     private String getCellValue(Row row, int columnIndex) {
