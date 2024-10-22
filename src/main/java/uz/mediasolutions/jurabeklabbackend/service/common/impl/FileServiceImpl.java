@@ -92,8 +92,12 @@ public class FileServiceImpl implements FileService {
     }
 
     public void deleteFile(String uuidFilename) throws IOException {
-        // Fayl yo'lini aniqlash va uni o‘chirish
-        Path filePath = Paths.get(uploadDir).resolve(uuidFilename);
-        Files.deleteIfExists(filePath);
+        try {
+            // Fayl yo'lini aniqlash va uni o‘chirish
+            Path filePath = Paths.get(uploadDir).resolve(uuidFilename);
+            Files.deleteIfExists(filePath);
+        } catch (Exception e) {
+            System.out.println("Error deleting file: " + uuidFilename);
+        }
     }
 }
