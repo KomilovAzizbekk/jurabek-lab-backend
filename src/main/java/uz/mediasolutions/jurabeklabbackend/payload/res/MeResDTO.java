@@ -27,4 +27,8 @@ public class MeResDTO {
 
     private String version;
 
+    private String androidUrl;
+
+    private String iosUrl;
+
 }

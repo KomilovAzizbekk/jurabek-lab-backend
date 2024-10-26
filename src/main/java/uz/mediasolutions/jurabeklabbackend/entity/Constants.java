@@ -22,4 +22,8 @@ public class Constants {
 
     private String version;
 
+    private String androidUrl;
+
+    private String iosUrl;
+
 }

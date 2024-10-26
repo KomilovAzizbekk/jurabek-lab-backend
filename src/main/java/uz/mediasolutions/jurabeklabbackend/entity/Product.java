@@ -20,7 +20,7 @@ import java.math.BigDecimal;
 @DynamicInsert
 public class Product extends AbsLongDef {
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Column(precision = 12, scale = 2)
