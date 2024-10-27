@@ -25,7 +25,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class SmsService {
 
-    @Value("${es    kiz.account.email}")
+    @Value("${eskiz.account.email}")
     private String email;
 
     @Value("${eskiz.account.password}")
