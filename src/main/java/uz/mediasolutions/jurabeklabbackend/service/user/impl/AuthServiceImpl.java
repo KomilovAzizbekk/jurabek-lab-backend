@@ -57,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> signIn(String lang, SignInDTO dto) {
         User existingUser;
 
+
         // Faqat telefon raqam junatilganda
         if (dto.getOtp() == null || dto.getOtp().isEmpty()) {
             if (!userRepository.existsByPhoneNumberAndDeletedFalse(dto.getPhoneNumber())) {
@@ -69,6 +70,14 @@ public class AuthServiceImpl implements AuthService {
                         .language(getLanguage(lang))
                         .build();
                 existingUser = userRepository.save(user);
+            }
+            // Test user bolsa
+            else if (dto.getPhoneNumber().equals("+998 00 000-00-00") && dto.getOtp().equals("0000")) {
+                User user = userRepository.findByPhoneNumberAndDeletedFalse("+998 00 000-00-00").orElseThrow(
+                        () -> RestException.restThrow("Test user not found", HttpStatus.NOT_FOUND)
+                );
+                TokenUserDTO tokenForUser = getTokenForUser(user);
+                return ResponseEntity.ok(tokenForUser);
             } else {
                 existingUser = userRepository.findByPhoneNumberAndDeletedFalse(dto.getPhoneNumber()).orElseThrow(
                         () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)

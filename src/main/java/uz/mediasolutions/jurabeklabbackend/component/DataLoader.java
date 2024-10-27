@@ -13,6 +13,8 @@ import uz.mediasolutions.jurabeklabbackend.repository.SmsTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.service.user.impl.SmsService;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class DataLoader implements CommandLineRunner {
@@ -36,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
             smsService.obtainToken();
         }
 
+        addTestUser();
         addConstants();
     }
 
@@ -47,6 +50,22 @@ public class DataLoader implements CommandLineRunner {
                     .version("1.0")
                     .build();
             constantsRepository.save(constants);
+        }
+    }
+
+    private void addTestUser() {
+        if (!userRepository.existsByPhoneNumberAndDeletedFalse("+998 00 000-00-00")) {
+            User user = User.builder()
+                    .deleted(false)
+                    .balance(new BigDecimal(0))
+                    .role(RoleName.ROLE_USER)
+                    .language("uz")
+                    .registered(true)
+                    .firstName("test")
+                    .lastName("test")
+                    .phoneNumber("+998 00 000-00-00")
+                    .build();
+            userRepository.save(user);
         }
     }
 
