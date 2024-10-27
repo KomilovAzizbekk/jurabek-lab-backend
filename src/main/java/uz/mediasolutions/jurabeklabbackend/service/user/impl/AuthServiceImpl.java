@@ -60,7 +60,9 @@ public class AuthServiceImpl implements AuthService {
 
         // Faqat telefon raqam junatilganda
         if (dto.getOtp() == null || dto.getOtp().isEmpty()) {
-            if (!userRepository.existsByPhoneNumberAndDeletedFalse(dto.getPhoneNumber())) {
+            if (dto.getPhoneNumber().equals("+998 00 000-00-00")) {
+                return ResponseEntity.ok("OTP is sent");
+            } else if (!userRepository.existsByPhoneNumberAndDeletedFalse(dto.getPhoneNumber())) {
                 User user = User.builder()
                         .phoneNumber(dto.getPhoneNumber())
                         .role(RoleName.ROLE_USER)
@@ -70,14 +72,6 @@ public class AuthServiceImpl implements AuthService {
                         .language(getLanguage(lang))
                         .build();
                 existingUser = userRepository.save(user);
-            }
-            // Test user bolsa
-            else if (dto.getPhoneNumber().equals("+998 00 000-00-00") && dto.getOtp().equals("0000")) {
-                User user = userRepository.findByPhoneNumberAndDeletedFalse("+998 00 000-00-00").orElseThrow(
-                        () -> RestException.restThrow("Test user not found", HttpStatus.NOT_FOUND)
-                );
-                TokenUserDTO tokenForUser = getTokenForUser(user);
-                return ResponseEntity.ok(tokenForUser);
             } else {
                 existingUser = userRepository.findByPhoneNumberAndDeletedFalse(dto.getPhoneNumber()).orElseThrow(
                         () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
@@ -130,6 +124,14 @@ public class AuthServiceImpl implements AuthService {
             } catch (Exception e) {
                 throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
             }
+        }
+        // Test user bolsa
+        else if (dto.getPhoneNumber().equals("+998 00 000-00-00") && dto.getOtp().equals("0000")) {
+            User user = userRepository.findByPhoneNumberAndDeletedFalse("+998 00 000-00-00").orElseThrow(
+                    () -> RestException.restThrow("Test user not found", HttpStatus.NOT_FOUND)
+            );
+            TokenUserDTO tokenForUser = getTokenForUser(user);
+            return ResponseEntity.ok(tokenForUser);
         }
 
         // Agar phone number va otp junatilsa, tekshirish
