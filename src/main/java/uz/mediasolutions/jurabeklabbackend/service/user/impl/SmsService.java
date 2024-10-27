@@ -3,11 +3,12 @@ package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -17,15 +18,14 @@ import uz.mediasolutions.jurabeklabbackend.entity.SmsToken;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.repository.SmsTokenRepository;
 
-import java.sql.Timestamp;
+import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SmsService {
 
-    @Value("${eskiz.account.email}")
+    @Value("${es    kiz.account.email}")
     private String email;
 
     @Value("${eskiz.account.password}")
@@ -64,8 +64,22 @@ public class SmsService {
         }
     }
 
+    // Har 29 kunda bajariladi (millisekundlarda 29 kun = 29 * 24 * 60 * 60 * 1000 ms)
+    @Scheduled(fixedRate = 2505600000L) // 29 kun
+    public void autoRefreshToken() {
+        System.out.println("Tokenni avtomatik yangilash jarayoni boshlandi.");
+        try {
+            refreshToken();
+            System.out.println("Token muvaffaqiyatli yangilandi.");
+        } catch (Exception e) {
+            System.err.println("Tokenni yangilashda xatolik: " + e.getMessage());
+        }
+    }
+
+
     public RestTemplate createRestTemplate() {
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
         return new RestTemplate(requestFactory);
     }
 
@@ -74,22 +88,20 @@ public class SmsService {
                 () -> RestException.restThrow("Token not found", HttpStatus.NOT_FOUND)
         );
 
-        String oldToken = smsToken.getToken();
-        String newToken;
+        String currentToken = smsToken.getToken();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(oldToken);
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         RestTemplate template = createRestTemplate();
 
-        ResponseEntity<TokenResponse> response = template.exchange(refreshUrl, HttpMethod.PATCH, requestEntity, TokenResponse.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(currentToken);  // hozirgi tokenni almashtiring
 
-        if (response.getStatusCode() == HttpStatus.OK) {
-            newToken = Objects.requireNonNull(response.getBody()).getData().getToken();
-            smsToken.setToken(newToken);
-            tokenRepository.save(smsToken);
-        }
+        // So'rovni yuboring
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = template.exchange(refreshUrl, HttpMethod.PATCH, requestEntity, Map.class);
+        currentToken = (String) response.getBody().get("token");  // Yangi tokenni saqlash
+        smsToken.setToken(currentToken);
+        tokenRepository.save(smsToken);
     }
 
     public HttpStatusCode sendSms(String mobilePhone, String message, String from, String callbackUrl) {
