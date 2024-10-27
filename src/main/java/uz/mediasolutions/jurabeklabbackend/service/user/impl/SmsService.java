@@ -3,8 +3,11 @@ package uz.mediasolutions.jurabeklabbackend.service.user.impl;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -61,6 +64,11 @@ public class SmsService {
         }
     }
 
+    public RestTemplate createRestTemplate() {
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        return new RestTemplate(requestFactory);
+    }
+
     public void refreshToken() {
         SmsToken smsToken = tokenRepository.findById(1L).orElseThrow(
                 () -> RestException.restThrow("Token not found", HttpStatus.NOT_FOUND)
@@ -73,8 +81,9 @@ public class SmsService {
         headers.setBearerAuth(oldToken);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        RestTemplate template = createRestTemplate();
 
-        ResponseEntity<TokenResponse> response = restTemplate.exchange(refreshUrl, HttpMethod.PATCH, requestEntity, TokenResponse.class);
+        ResponseEntity<TokenResponse> response = template.exchange(refreshUrl, HttpMethod.PATCH, requestEntity, TokenResponse.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
             newToken = Objects.requireNonNull(response.getBody()).getData().getToken();
