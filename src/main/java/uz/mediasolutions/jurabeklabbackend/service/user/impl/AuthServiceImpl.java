@@ -103,11 +103,6 @@ public class AuthServiceImpl implements AuthService {
 
                 if (statusCode == HttpStatus.OK) {
                     return ResponseEntity.ok("OTP is sent");
-                } else if (statusCode == HttpStatus.UNAUTHORIZED) {
-                    smsService.refreshToken();
-                    smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", callbackUrl);
-                } else {
-                    throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
                 }
 
                 // OTPni 2 daqiqadan so'ng o'chirish

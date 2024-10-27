@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uz.mediasolutions.jurabeklabbackend.entity.SmsToken;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
@@ -101,9 +102,13 @@ public class SmsService {
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<SmsResponse> response = restTemplate.exchange(smsUrl, HttpMethod.POST, requestEntity, SmsResponse.class);
-
-        return response.getStatusCode();
+        try {
+            ResponseEntity<SmsResponse> response = restTemplate.exchange(smsUrl, HttpMethod.POST, requestEntity, SmsResponse.class);
+            return response.getStatusCode();
+        } catch (HttpClientErrorException.Unauthorized e) {
+            refreshToken();
+            return sendSms(mobilePhone, message, from, callbackUrl);
+        }
     }
 
     @Getter
