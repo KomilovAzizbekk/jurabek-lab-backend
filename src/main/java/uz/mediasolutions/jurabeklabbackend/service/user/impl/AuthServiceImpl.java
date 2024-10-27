@@ -57,7 +57,6 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> signIn(String lang, SignInDTO dto) {
         User existingUser;
 
-
         // Faqat telefon raqam junatilganda
         if (dto.getOtp() == null || dto.getOtp().isEmpty()) {
             if (dto.getPhoneNumber().equals("+998 00 000-00-00")) {
