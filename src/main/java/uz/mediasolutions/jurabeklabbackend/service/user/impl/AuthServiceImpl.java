@@ -121,6 +121,7 @@ public class AuthServiceImpl implements AuthService {
                     }
                 }, 2, TimeUnit.MINUTES);
             } catch (Exception e) {
+                e.printStackTrace();
                 throw RestException.restThrow("Error with sending OTP", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
