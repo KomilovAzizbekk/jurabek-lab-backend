@@ -20,6 +20,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.ImageDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.ConstantsRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.ProductRepository;
+import uz.mediasolutions.jurabeklabbackend.service.TransliteratorService;
 import uz.mediasolutions.jurabeklabbackend.service.admin.abs.ProductService;
 import uz.mediasolutions.jurabeklabbackend.service.common.impl.FileServiceImpl;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
@@ -35,6 +36,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final FileServiceImpl fileService;
     private final ConstantsRepository constantsRepository;
+    private final TransliteratorService transliteratorService;
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {
@@ -116,9 +118,6 @@ public class ProductServiceImpl implements ProductService {
             }
 
             if (!productsToSave.isEmpty()) {
-                for (Product product : productsToSave) {
-                    System.out.println(product.getName());
-                }
                 productRepository.saveAll(productsToSave);
             }
 
@@ -131,6 +130,7 @@ public class ProductServiceImpl implements ProductService {
     private Product processRow(Row row) {
         String name = getCellValue(row, 1);
         String price = getCellValue(row, 4);
+        String transliterate = transliteratorService.transliterate(name);
 
         // Narx bo'sh bo'lsa 0 ga o'zgartirish
         if (price.isEmpty()) {
@@ -154,6 +154,7 @@ public class ProductServiceImpl implements ProductService {
             if (existingProductOpt.isPresent()) {
                 // Mahsulot mavjud bo'lsa, narxni yangilash
                 Product existingProduct = existingProductOpt.get();
+                existingProduct.setTranslate(transliterate);
                 existingProduct.setPrice(newPrice);
                 return existingProduct;
             } else {
@@ -161,6 +162,7 @@ public class ProductServiceImpl implements ProductService {
                 return Product.builder()
                         .price(newPrice)
                         .name(name)
+                        .translate(transliterate)
                         .deleted(false)
                         .build();
             }

@@ -23,6 +23,8 @@ public class Product extends AbsLongDef {
     @Column(nullable = false)
     private String name;
 
+    private String translate;
+
     @Column(precision = 12, scale = 2)
     private BigDecimal price;
 
