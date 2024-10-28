@@ -41,7 +41,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             "         LEFT JOIN pharmacies p ON p.id = t.pharmacy_id\n" +
             "WHERE t.user_id = :userId\n" +
             "  AND (:type IS NULL\n" +
-            "    OR t.type = :type)", nativeQuery = true)
+            "    OR t.type = :type) \n" +
+            "ORDER BY t.updated_at DESC", nativeQuery = true)
     Page<TransactionHistoryDTO> getTransactionHistory(@Param("userId") UUID userId,
                                                       @Param("type") String type,
                                                       Pageable pageable);
