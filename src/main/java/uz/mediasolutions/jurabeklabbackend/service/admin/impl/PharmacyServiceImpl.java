@@ -82,8 +82,7 @@ public class PharmacyServiceImpl implements PharmacyService {
                     String combine = name.trim() + " " + address.trim();
 
                     // Bazada yoki Setda mavjud bo'lmagan name'larni qayta ishlaymiz
-                    if (!processedNamesAndAddresses.contains(combine) &&
-                            !pharmacyRepository.existsByNameAndAddressAndDeletedFalse(name, address)) {
+                    if (!processedNamesAndAddresses.contains(combine)) {
                         processedNamesAndAddresses.add(combine);
                         Pharmacy pharmacy = processRow(row);  // Qatorni qayta ishlash
                         pharmaciesToSave.add(pharmacy);  // Bazaga saqlash uchun ro'yxatga qo'shamiz
