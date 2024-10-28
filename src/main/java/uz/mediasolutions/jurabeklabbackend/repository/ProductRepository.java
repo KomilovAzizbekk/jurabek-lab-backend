@@ -19,7 +19,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "       p.price,\n" +
             "       p.image_url as imageUrl\n" +
             "FROM products p\n" +
-            "WHERE (:search IS NULL OR p.name ILIKE '%' || :search || '%') ||\n" +
+            "WHERE (:search IS NULL OR p.name ILIKE '%' || :search || '%') OR\n" +
             "      (:search IS NULL OR p.translate ILIKE '%' || :search || '%')\n" +
             "  AND p.deleted = false\n" +
             "ORDER BY p.created_at DESC", nativeQuery = true)
