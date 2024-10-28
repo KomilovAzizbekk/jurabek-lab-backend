@@ -51,6 +51,9 @@ public class TransactionServiceImpl implements TransactionService {
         notification.setTransactionId(transaction.getId().toString());
 
         if (paidOrRejected) {
+            user.setBalance(user.getBalance().subtract(transaction.getAmount()));
+            userRepository.save(user);
+
             notification.setType(NotificationType.TRANSACTION_ACCEPTED);
             transaction.setStatus(TransactionStatus.DONE);
         } else {
