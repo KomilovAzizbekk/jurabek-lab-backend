@@ -43,6 +43,7 @@ public class TransliteratorService {
         cyrillicToLatinMap.put('Э', "E");   cyrillicToLatinMap.put('э', "e");
         cyrillicToLatinMap.put('Ю', "Yu");  cyrillicToLatinMap.put('ю', "yu");
         cyrillicToLatinMap.put('Я', "Ya");  cyrillicToLatinMap.put('я', "ya");
+        cyrillicToLatinMap.put('Ь', "");    cyrillicToLatinMap.put('ь', "");
         // Hamma xarflarni to'liq kiritdik
     }
 
