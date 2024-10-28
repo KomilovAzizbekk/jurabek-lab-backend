@@ -15,4 +15,8 @@ public class ConstantsDTO {
 
     private String version;
 
+    private String androidUrl;
+
+    private String iosUrl;
+
 }
