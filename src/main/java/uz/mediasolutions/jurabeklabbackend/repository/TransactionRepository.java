@@ -35,13 +35,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             "       c.name                                                               as cardName,\n" +
             "       CASE WHEN c.number IS NOT NULL THEN RIGHT(c.number, 4) ELSE NULL END as cardNumber,\n" +
             "       p.name                                                               as pharmacy,\n" +
-            "       t.updated_at                                                         as upadtedTime\n" +
+            "       t.updated_at                                                         as upadtedTime,\n" +
+            "       t.created_at                                                         as createdTime\n" +
             "FROM transactions t\n" +
             "         LEFT JOIN cards c ON c.id = t.card_id\n" +
             "         LEFT JOIN pharmacies p ON p.id = t.pharmacy_id\n" +
             "WHERE t.user_id = :userId\n" +
             "  AND (:type IS NULL\n" +
-            "    OR t.type = :type) \n" +
+            "    OR t.type = :type)\n" +
             "ORDER BY t.updated_at DESC", nativeQuery = true)
     Page<TransactionHistoryDTO> getTransactionHistory(@Param("userId") UUID userId,
                                                       @Param("type") String type,

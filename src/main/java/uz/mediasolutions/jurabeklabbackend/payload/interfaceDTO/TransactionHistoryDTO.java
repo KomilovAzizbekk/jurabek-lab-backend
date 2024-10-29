@@ -21,4 +21,6 @@ public interface TransactionHistoryDTO {
 
     Timestamp getUpdatedTime();
 
+    Timestamp getCreatedTime();
+
 }
