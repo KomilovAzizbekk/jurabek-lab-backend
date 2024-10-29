@@ -2,7 +2,7 @@ package uz.mediasolutions.jurabeklabbackend.service.admin.abs;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import uz.mediasolutions.jurabeklabbackend.payload.req.ImageDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.ProductEditDTO;
 
 public interface ProductService {
 
@@ -12,5 +12,5 @@ public interface ProductService {
 
     ResponseEntity<?> delete(Long id);
 
-    ResponseEntity<?> editImage(Long id, ImageDTO dto);
+    ResponseEntity<?> edit(Long id, ProductEditDTO dto);
 }

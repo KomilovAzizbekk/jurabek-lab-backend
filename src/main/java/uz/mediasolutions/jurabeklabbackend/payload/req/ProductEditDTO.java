@@ -7,7 +7,9 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class ImageDTO {
+public class ProductEditDTO {
+
+    private String description;
 
     private String imageUrl;
 

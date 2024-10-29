@@ -4,13 +4,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.ProductDTO;
-import uz.mediasolutions.jurabeklabbackend.payload.req.ImageDTO;
+import uz.mediasolutions.jurabeklabbackend.payload.req.ProductEditDTO;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
 @RequestMapping(Rest.BASE_PATH + "admin/products")
@@ -31,9 +30,10 @@ public interface ProductController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     ResponseEntity<?> add(@RequestParam("file") MultipartFile file);
 
-    @PatchMapping("/edit-image/{id}")
-    ResponseEntity<?> editImage(@PathVariable("id") Long id,
-                                @RequestBody @Valid ImageDTO dto);
+    @PatchMapping("/edit/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    ResponseEntity<?> edit(@PathVariable("id") Long id,
+                           @RequestBody ProductEditDTO dto);
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
