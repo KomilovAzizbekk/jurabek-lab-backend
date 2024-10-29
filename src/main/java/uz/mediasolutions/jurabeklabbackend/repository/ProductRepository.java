@@ -17,7 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query(value = "SELECT p.id,\n" +
             "       p.name,\n" +
             "       p.price,\n" +
-            "       p.image_url as imageUrl\n" +
+            "       p.image_url as imageUrl,\n" +
+            "       p.description\n" +
             "FROM products p\n" +
             "WHERE (:search IS NULL OR p.name ILIKE '%' || :search || '%') OR\n" +
             "      (:search IS NULL OR p.translate ILIKE '%' || :search || '%')\n" +

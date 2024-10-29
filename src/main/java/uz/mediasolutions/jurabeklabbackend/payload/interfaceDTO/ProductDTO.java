@@ -12,4 +12,6 @@ public interface ProductDTO {
 
     String getImageUrl();
 
+    String getDescription();
+
 }
