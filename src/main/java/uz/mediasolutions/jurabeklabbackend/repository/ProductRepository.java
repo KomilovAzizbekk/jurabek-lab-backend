@@ -20,8 +20,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "       p.image_url as imageUrl,\n" +
             "       p.description\n" +
             "FROM products p\n" +
-            "WHERE (:search IS NULL OR p.name ILIKE '%' || :search || '%') OR\n" +
-            "      (:search IS NULL OR p.translate ILIKE '%' || :search || '%')\n" +
+            "WHERE ((:search IS NULL OR p.name ILIKE '%' || :search || '%')\n" +
+            "    OR (:search IS NULL OR p.translate ILIKE '%' || :search || '%'))\n" +
             "  AND p.deleted = false\n" +
             "ORDER BY p.created_at DESC", nativeQuery = true)
     Page<ProductDTO> findAllWithSearch(@Param("search") String search,
