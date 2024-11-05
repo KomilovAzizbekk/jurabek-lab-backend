@@ -52,7 +52,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "       o.status,\n" +
             "       o.created_at            as createdTime,\n" +
             "       o.total_price           as totalPrice,\n" +
-            "       p.name,\n" +
+            "       p.name                  as pharmacy,\n" +
             "       o.pharmacy_phone_number as phoneNumber,\n" +
             "       p.address\n" +
             "FROM orders o\n" +
