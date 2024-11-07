@@ -16,8 +16,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uz.mediasolutions.jurabeklabbackend.entity.SmsToken;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
+import uz.mediasolutions.jurabeklabbackend.payload.res.SmsTokenResDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.SmsTokenRepository;
 
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Objects;
 
@@ -58,14 +60,24 @@ public class SmsService {
 
         if (response.getStatusCode() == HttpStatus.OK) {
             String token = Objects.requireNonNull(response.getBody()).getData().getToken();
-            tokenRepository.save(SmsToken.builder()
-                    .token(token)
-                    .build());
+            if (tokenRepository.existsById(1L)) {
+                SmsToken smsToken = tokenRepository.findById(1L).get();
+                smsToken.setToken(token);
+                smsToken.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+                tokenRepository.save(smsToken);
+            } else {
+                tokenRepository.save(
+                        SmsToken.builder()
+                                .token(token)
+                                .updatedAt(new Timestamp(System.currentTimeMillis()))
+                                .build());
+            }
         }
     }
 
-    // Har 29 kunda bajariladi (millisekundlarda 29 kun = 29 * 24 * 60 * 60 * 1000 ms)
+    // Har 2 kunda bajariladi (millisekundlarda 29 kun = 29 * 24 * 60 * 60 * 1000 ms)
     @Scheduled(fixedRate = 2505600000L) // 29 kun
+    @Scheduled(fixedRate = 172800000L) // 2 kun
     public void autoRefreshToken() {
         System.out.println("Tokenni avtomatik yangilash jarayoni boshlandi.");
         try {
@@ -98,8 +110,8 @@ public class SmsService {
 
         // So'rovni yuboring
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<Map> response = template.exchange(refreshUrl, HttpMethod.PATCH, requestEntity, Map.class);
-        currentToken = (String) response.getBody().get("token");  // Yangi tokenni saqlash
+        ResponseEntity<SmsTokenResDTO> response = template.exchange(refreshUrl, HttpMethod.PATCH, requestEntity, SmsTokenResDTO.class);
+        currentToken = Objects.requireNonNull(response.getBody()).getData().getToken();  // Yangi tokenni saqlash
         smsToken.setToken(currentToken);
         tokenRepository.save(smsToken);
     }

@@ -3,6 +3,8 @@ package uz.mediasolutions.jurabeklabbackend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -18,5 +20,7 @@ public class SmsToken {
 
     @Column(length = 500)
     private String token;
+
+    private Timestamp updatedAt;
 
 }
