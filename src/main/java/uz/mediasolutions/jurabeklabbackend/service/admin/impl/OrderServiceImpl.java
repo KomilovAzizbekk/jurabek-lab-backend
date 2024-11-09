@@ -135,7 +135,7 @@ public class OrderServiceImpl implements OrderService {
         notification.setAmount(income);
 
         if (!order.getStatus().equals(OrderStatus.SENT)) {
-            throw RestException.restThrow("Order is already processed", HttpStatus.BAD_REQUEST);
+            throw RestException.restThrow("Order is already processed", HttpStatus.CONFLICT);
         }
 
         if (accept) {
