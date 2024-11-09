@@ -51,6 +51,9 @@ public class TransactionServiceImpl implements TransactionService {
         notification.setTransactionId(transaction.getId().toString());
 
         if (paidOrRejected) {
+            if (user.getBalance().subtract(transaction.getAmount()).floatValue() < 0) {
+                throw RestException.restThrow("Transaction amount error", HttpStatus.BAD_REQUEST);
+            }
             user.setBalance(user.getBalance().subtract(transaction.getAmount()));
             userRepository.save(user);
 
