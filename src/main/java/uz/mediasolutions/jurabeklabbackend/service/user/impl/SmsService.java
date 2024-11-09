@@ -76,7 +76,7 @@ public class SmsService {
     }
 
     // Har 2 kunda bajariladi (millisekundlarda 29 kun = 29 * 24 * 60 * 60 * 1000 ms)
-    @Scheduled(fixedRate = 2505600000L) // 29 kun
+//    @Scheduled(fixedRate = 2505600000L) // 29 kun
     @Scheduled(fixedRate = 172800000L) // 2 kun
     public void autoRefreshToken() {
         System.out.println("Tokenni avtomatik yangilash jarayoni boshlandi.");
@@ -113,6 +113,7 @@ public class SmsService {
         ResponseEntity<SmsTokenResDTO> response = template.exchange(refreshUrl, HttpMethod.PATCH, requestEntity, SmsTokenResDTO.class);
         currentToken = Objects.requireNonNull(response.getBody()).getData().getToken();  // Yangi tokenni saqlash
         smsToken.setToken(currentToken);
+        smsToken.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         tokenRepository.save(smsToken);
     }
 
