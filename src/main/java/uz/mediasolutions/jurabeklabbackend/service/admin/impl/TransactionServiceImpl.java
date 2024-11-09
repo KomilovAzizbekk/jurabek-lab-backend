@@ -50,6 +50,10 @@ public class TransactionServiceImpl implements TransactionService {
         notification.setAmount(transaction.getAmount());
         notification.setTransactionId(transaction.getId().toString());
 
+        if (!transaction.getStatus().equals(TransactionStatus.WAITING)) {
+            throw RestException.restThrow("Transaction is already processed", HttpStatus.CONFLICT);
+        }
+
         if (paidOrRejected) {
             if (user.getBalance().subtract(transaction.getAmount()).floatValue() < 0) {
                 throw RestException.restThrow("Transaction amount error", HttpStatus.BAD_REQUEST);

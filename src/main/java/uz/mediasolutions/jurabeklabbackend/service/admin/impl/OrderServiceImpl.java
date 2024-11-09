@@ -134,6 +134,10 @@ public class OrderServiceImpl implements OrderService {
         notification.setOrderId(order.getId().toString());
         notification.setAmount(income);
 
+        if (!order.getStatus().equals(OrderStatus.SENT)) {
+            throw RestException.restThrow("Order is already processed", HttpStatus.BAD_REQUEST);
+        }
+
         if (accept) {
             user.setBalance(user.getBalance().add(income));
             notification.setType(NotificationType.ORDER_CONFIRMED);
