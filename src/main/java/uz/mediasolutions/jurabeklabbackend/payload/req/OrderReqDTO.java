@@ -17,8 +17,13 @@ import java.util.List;
 @Builder
 public class OrderReqDTO {
 
-    @NotNull
+    private Long districtId;
+
     private Long pharmacyId;
+
+    private String pharmacyName;
+
+    private String pharmacyAddress;
 
     @NotNull
     @NotBlank

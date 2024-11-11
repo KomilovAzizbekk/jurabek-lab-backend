@@ -14,10 +14,7 @@ import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.OrderProductReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.OrderReqDTO;
-import uz.mediasolutions.jurabeklabbackend.repository.OrderProductRepository;
-import uz.mediasolutions.jurabeklabbackend.repository.OrderRepository;
-import uz.mediasolutions.jurabeklabbackend.repository.PharmacyRepository;
-import uz.mediasolutions.jurabeklabbackend.repository.ProductRepository;
+import uz.mediasolutions.jurabeklabbackend.repository.*;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.OrderService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
@@ -32,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final PharmacyRepository pharmacyRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final DistrictRepository districtRepository;
 
     @Override
     public ResponseEntity<Page<?>> findAll(int page, int size, String status) {
@@ -69,13 +67,30 @@ public class OrderServiceImpl implements OrderService {
             throw RestException.restThrow("Couldn't recognize user", HttpStatus.UNAUTHORIZED);
         }
 
-        Pharmacy pharmacy = pharmacyRepository.findById(dto.getPharmacyId()).orElseThrow(
-                () -> new RestException("Pharmacy not found", HttpStatus.NOT_FOUND)
+        District district = districtRepository.findById(dto.getDistrictId()).orElseThrow(
+                () -> RestException.restThrow("District not found", HttpStatus.NOT_FOUND)
         );
 
-        if (dto.getInn() != null) {
-            pharmacy.setInn(dto.getInn());
+        Pharmacy pharmacy;
+
+        if (dto.getPharmacyId() == null) {
+            pharmacy = Pharmacy.builder()
+                    .inn(dto.getInn())
+                    .name(dto.getPharmacyName())
+                    .deleted(false)
+                    .address(dto.getPharmacyAddress())
+                    .district(district)
+                    .build();
             pharmacyRepository.save(pharmacy);
+        } else {
+            pharmacy = pharmacyRepository.findById(dto.getPharmacyId()).orElseThrow(
+                    () -> new RestException("Pharmacy not found", HttpStatus.NOT_FOUND)
+            );
+
+            if (dto.getInn() != null) {
+                pharmacy.setInn(dto.getInn());
+                pharmacyRepository.save(pharmacy);
+            }
         }
 
         Order order = Order.builder()
