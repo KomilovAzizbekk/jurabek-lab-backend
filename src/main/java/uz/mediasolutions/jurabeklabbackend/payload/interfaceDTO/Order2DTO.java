@@ -9,6 +9,8 @@ public interface Order2DTO {
 
     String getStatus();
 
+    String getInn();
+
     Timestamp getCreatedTime();
 
     BigDecimal getTotalPrice();

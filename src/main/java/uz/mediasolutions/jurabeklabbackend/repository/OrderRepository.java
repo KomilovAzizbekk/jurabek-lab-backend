@@ -51,6 +51,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "SELECT o.id,\n" +
             "       o.status,\n" +
             "       o.created_at            as createdTime,\n" +
+            "       p.inn,\n" +
             "       o.total_price           as totalPrice,\n" +
             "       p.name                  as pharmacy,\n" +
             "       o.pharmacy_phone_number as phoneNumber,\n" +
