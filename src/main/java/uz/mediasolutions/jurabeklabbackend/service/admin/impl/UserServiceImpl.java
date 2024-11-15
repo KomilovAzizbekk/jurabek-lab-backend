@@ -138,7 +138,8 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole().name())
                 .notifications(notifications)
-                .version(constants != null ? constants.getVersion() : null)
+                .iosVersion(constants != null ? constants.getIosVersion() : null)
+                .androidVersion(constants != null ? constants.getAndroidVersion() : null)
                 .androidUrl(constants != null ? constants.getAndroidUrl() : null)
                 .iosUrl(constants != null ? constants.getIosUrl() : null)
                 .build();

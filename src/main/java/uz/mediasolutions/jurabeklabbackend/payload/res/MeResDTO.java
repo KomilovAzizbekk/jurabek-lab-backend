@@ -25,7 +25,9 @@ public class MeResDTO {
 
     private Integer notifications;
 
-    private String version;
+    private String androidVersion;
+
+    private String iosVersion;
 
     private String androidUrl;
 
