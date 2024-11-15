@@ -23,15 +23,19 @@ public class Product extends AbsLongDef {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "translate")
     private String translate;
 
+    @Column(name = "description")
     private String description;
 
     @Column(precision = 12, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "deleted")
     private boolean deleted;
 
 }

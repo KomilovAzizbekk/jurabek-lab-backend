@@ -21,6 +21,7 @@ public class Pharmacy extends AbsLongDef {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "enable_order")
     private Boolean enableOrder;
 
     @Column(nullable = false)

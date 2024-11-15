@@ -21,6 +21,7 @@ public class SmsToken {
     @Column(length = 500)
     private String token;
 
+    @Column(name = "updated_at")
     private Timestamp updatedAt;
 
 }
