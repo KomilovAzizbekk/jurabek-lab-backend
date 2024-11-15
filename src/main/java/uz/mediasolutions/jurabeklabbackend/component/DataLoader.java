@@ -47,7 +47,8 @@ public class DataLoader implements CommandLineRunner {
             Constants constants = Constants.builder()
                     .cashbackPercent(10)
                     .productPercent(10)
-                    .version("1.0")
+                    .androidVersion("1.0")
+                    .iosVersion("1.0")
                     .build();
             constantsRepository.save(constants);
         }

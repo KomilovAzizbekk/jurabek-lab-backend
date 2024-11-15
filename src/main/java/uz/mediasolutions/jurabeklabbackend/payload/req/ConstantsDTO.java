@@ -13,7 +13,9 @@ public class ConstantsDTO {
 
     private Integer cashbackPercent;
 
-    private String version;
+    private String androidVersion;
+
+    private String iosVersion;
 
     private String androidUrl;
 

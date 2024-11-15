@@ -36,7 +36,8 @@ public class ConstantsControllerImpl implements ConstantsController {
 
         Optional.ofNullable(dto.getCashbackPercent()).ifPresent(constants::setCashbackPercent);
         Optional.ofNullable(dto.getProductPercent()).ifPresent(constants::setProductPercent);
-        Optional.ofNullable(dto.getVersion()).ifPresent(constants::setVersion);
+        Optional.ofNullable(dto.getAndroidVersion()).ifPresent(constants::setAndroidVersion);
+        Optional.ofNullable(dto.getIosVersion()).ifPresent(constants::setIosVersion);
         Optional.ofNullable(dto.getIosUrl()).ifPresent(constants::setIosUrl);
         Optional.ofNullable(dto.getAndroidUrl()).ifPresent(constants::setAndroidUrl);
         constantsRepository.save(constants);
