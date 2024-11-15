@@ -36,6 +36,8 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
     Page<PharmacyDTO> findAllWithSearch(Pageable pageable,
                                         @Param("search") String search);
 
+    List<Pharmacy> findAllByDeletedFalse();
+
     boolean existsByNameAndAddressAndDeletedFalse(String name, String address);
 
     @Query(value = "SELECT p.id,\n" +
@@ -52,5 +54,5 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
 
     Optional<Pharmacy> findByIdAndDeletedFalse(Long id);
 
-    List<Pharmacy> findByIdIn(Set<Long> pharmacyIds);
+    List<Pharmacy> findByIdInAndDeletedFalse(Set<Long> pharmacyIds);
 }

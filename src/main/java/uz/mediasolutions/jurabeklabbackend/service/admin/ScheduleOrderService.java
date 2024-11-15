@@ -38,7 +38,7 @@ public class ScheduleOrderService {
                 .map(Order::getPharmacyId)
                 .collect(Collectors.toSet());
 
-        List<Pharmacy> pharmacies = pharmacyRepository.findByIdIn(pharmacyIds);
+        List<Pharmacy> pharmacies = pharmacyRepository.findByIdInAndDeletedFalse(pharmacyIds);
 
         Map<Long, Pharmacy> pharmacyMap = pharmacies.stream()
                 .collect(Collectors.toMap(Pharmacy::getId, pharmacy -> pharmacy));
