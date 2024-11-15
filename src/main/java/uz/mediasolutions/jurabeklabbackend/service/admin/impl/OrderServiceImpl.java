@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("adminOrderService")
@@ -147,6 +146,9 @@ public class OrderServiceImpl implements OrderService {
             notification.setType(NotificationType.ORDER_CANCELLED);
             order.setStatus(OrderStatus.REJECTED);
         }
+        pharmacy.setEnableOrder(true);
+
+        pharmacyRepository.save(pharmacy);
         orderRepository.save(order);
         notificationRepository.save(notification);
 

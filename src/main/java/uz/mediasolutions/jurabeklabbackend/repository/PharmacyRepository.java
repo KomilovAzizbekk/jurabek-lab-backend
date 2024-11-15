@@ -5,12 +5,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import uz.mediasolutions.jurabeklabbackend.entity.Order;
 import uz.mediasolutions.jurabeklabbackend.entity.Pharmacy;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Pharmacy2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.PharmacyDTO;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
 
@@ -49,5 +52,5 @@ public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
 
     Optional<Pharmacy> findByIdAndDeletedFalse(Long id);
 
-    Pharmacy findByNameAndDeletedFalse(String name);
+    List<Pharmacy> findByIdIn(Set<Long> pharmacyIds);
 }

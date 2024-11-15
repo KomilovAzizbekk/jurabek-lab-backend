@@ -114,6 +114,7 @@ public class PharmacyServiceImpl implements PharmacyService {
         // Yangi Pharmacy obyektini yaratish va qaytarish
         return Pharmacy.builder()
                 .name(name)
+                .enableOrder(true)
                 .district(savedDistrict)
                 .address(address)
                 .deleted(false)

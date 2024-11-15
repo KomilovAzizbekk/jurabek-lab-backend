@@ -87,10 +87,16 @@ public class OrderServiceImpl implements OrderService {
                     () -> new RestException("Pharmacy not found", HttpStatus.NOT_FOUND)
             );
 
+            if (!pharmacy.getEnableOrder()) {
+                throw RestException.restThrow("Order limit exceeded", HttpStatus.BAD_REQUEST);
+            } else {
+                pharmacy.setEnableOrder(false);
+            }
+
             if (dto.getInn() != null) {
                 pharmacy.setInn(dto.getInn());
-                pharmacyRepository.save(pharmacy);
             }
+            pharmacyRepository.save(pharmacy);
         }
 
         Order order = Order.builder()

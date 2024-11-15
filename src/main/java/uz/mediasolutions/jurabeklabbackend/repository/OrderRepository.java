@@ -10,6 +10,8 @@ import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.Order2DTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.OrderProductDTO;
 
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
@@ -75,5 +77,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "ORDER BY p.name", nativeQuery = true)
     Page<OrderProductDTO> getOrderProducts(@Param("orderId") Long orderId,
                                            Pageable pageable);
+
+    @Query(value = "SELECT o.* from orders o WHERE o.status = 'SENT' AND o.created_at < :cutoff_time", nativeQuery = true)
+    List<Order> findPendingOrdersBefore(@Param("cutoff_time") Timestamp cutoffTime);
 
 }
