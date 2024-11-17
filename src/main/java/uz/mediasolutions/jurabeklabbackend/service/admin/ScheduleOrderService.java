@@ -24,7 +24,7 @@ public class ScheduleOrderService {
     private final PharmacyRepository pharmacyRepository;
     private final OrderRepository orderRepository;
 
-    @Scheduled(fixedRate = 1200000)
+    @Scheduled(fixedRate = 3600000)
     public void scheduleRejectOrder() {
         LocalDateTime localDateTime = LocalDateTime.now().minusHours(72);
         Timestamp cutoffTime = Timestamp.valueOf(localDateTime);

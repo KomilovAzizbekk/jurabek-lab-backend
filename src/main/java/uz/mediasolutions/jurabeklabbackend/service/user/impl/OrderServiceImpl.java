@@ -88,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
             );
 
             if (!pharmacy.getEnableOrder()) {
-                throw RestException.restThrow("Order limit exceeded", HttpStatus.BAD_REQUEST);
+                throw RestException.restThrow("Order limit exceeded", HttpStatus.INTERNAL_SERVER_ERROR);
             } else {
                 pharmacy.setEnableOrder(false);
             }
