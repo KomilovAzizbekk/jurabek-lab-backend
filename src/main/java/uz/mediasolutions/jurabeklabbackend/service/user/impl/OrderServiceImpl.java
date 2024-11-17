@@ -84,11 +84,11 @@ public class OrderServiceImpl implements OrderService {
             pharmacyRepository.save(pharmacy);
         } else {
             pharmacy = pharmacyRepository.findById(dto.getPharmacyId()).orElseThrow(
-                    () -> new RestException("Pharmacy not found", HttpStatus.NOT_FOUND)
+                    () -> RestException.restThrow("Pharmacy not found", HttpStatus.NOT_FOUND)
             );
 
             if (!pharmacy.getEnableOrder()) {
-                throw RestException.restThrow("Order limit exceeded", HttpStatus.INTERNAL_SERVER_ERROR);
+                return ResponseEntity.status(200).body("Order limit exceeded");
             } else {
                 pharmacy.setEnableOrder(false);
             }
