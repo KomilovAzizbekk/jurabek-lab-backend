@@ -62,6 +62,7 @@ public class DataLoader implements CommandLineRunner {
                     .role(RoleName.ROLE_USER)
                     .language("uz")
                     .registered(true)
+                    .blocked(false)
                     .firstName("test")
                     .lastName("test")
                     .phoneNumber("+998 00 000-00-00")
