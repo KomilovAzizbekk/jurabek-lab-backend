@@ -19,4 +19,5 @@ public interface UserService {
 
     ResponseEntity<?> getMe();
 
+    ResponseEntity<?> blockUser(UUID id, boolean block);
 }

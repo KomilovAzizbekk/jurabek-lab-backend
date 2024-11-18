@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
+import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
@@ -41,6 +43,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (authorization.startsWith("Bearer ")) {
                 user = getUserFromBearerToken(authorization);
             }
+
+            if (user != null && user.isBlocked()) {
+                throw RestException.restThrow("User is blocked", HttpStatus.UNAUTHORIZED);
+            }
+
             if (user != null) {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         user, null, user.getAuthorities());

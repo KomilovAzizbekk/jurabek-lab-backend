@@ -48,6 +48,8 @@ public class User extends AbsUUID implements UserDetails {
 
     private boolean deleted;
 
+    private boolean blocked;
+
     @Enumerated(EnumType.STRING)
     private RoleName role;
 

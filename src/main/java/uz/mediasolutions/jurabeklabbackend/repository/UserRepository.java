@@ -9,7 +9,6 @@ import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.AdminDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.UserDTO;
 
-import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,7 +16,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByPhoneNumberAndDeletedFalse(String phoneNumber);
 
-    Optional<User> findByPhoneNumberAndDeletedFalse(String phoneNumber);
+    boolean existsByPhoneNumberAndBlockedTrue(String phoneNumber);
+
+    Optional<User> findByPhoneNumberAndDeletedFalseAndBlockedFalse(String phoneNumber);
 
     @Query(value = "SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END\n" +
             "FROM users u\n" +
@@ -30,7 +31,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "SELECT u.id,\n" +
             "       u.phone_number,\n" +
             "       u.first_name,\n" +
-            "       u.last_name\n" +
+            "       u.last_name,\n" +
+            "       u.blocked,\n" +
+            "       u.registered\n" +
             "FROM users u\n" +
             "WHERE (:search IS NULL\n" +
             "    OR u.phone_number ILIKE '%' || :search || '%'\n" +
@@ -65,4 +68,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "WHERE t.id = :transactionId\n", nativeQuery = true)
     Optional<User> findByTransactionId(@Param("transactionId") UUID transactionId);
 
+    Optional<User> findByPhoneNumberAndDeletedFalse(String s);
 }

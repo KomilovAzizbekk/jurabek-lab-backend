@@ -12,4 +12,8 @@ public interface UserDTO {
 
     String getLastName();
 
+    boolean getBlocked();
+
+    boolean getRegistered();
+
 }

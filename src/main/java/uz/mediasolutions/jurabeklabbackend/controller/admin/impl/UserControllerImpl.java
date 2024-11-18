@@ -41,6 +41,11 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
+    public ResponseEntity<?> blockUser(UUID id, boolean block) {
+        return service.blockUser(id, block);
+    }
+
+    @Override
     public ResponseEntity<?> deleteAdmin(UUID id) {
         return service.deleteAdmin(id);
     }

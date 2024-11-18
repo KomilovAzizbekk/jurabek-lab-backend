@@ -58,6 +58,11 @@ public interface UserController {
     ResponseEntity<?> editAdmin(@PathVariable UUID id,
                                 @RequestBody AdminReqDTO dto);
 
+    @PutMapping("/block-user/{id}")
+    @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+    ResponseEntity<?> blockUser(@PathVariable UUID id,
+                                @RequestParam(name = "block", defaultValue = "true") boolean block);
+
     @DeleteMapping("/delete-admin/{id}")
     @PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
     ResponseEntity<?> deleteAdmin(@PathVariable UUID id);

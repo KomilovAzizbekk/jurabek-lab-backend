@@ -132,6 +132,7 @@ public class UserServiceImpl implements UserService {
 
         MeResDTO me = MeResDTO.builder()
                 .id(user.getId())
+                .blocked(user.isBlocked())
                 .username(user.getUsername())
                 .lastName(user.getLastName())
                 .firstName(user.getFirstName())
@@ -145,6 +146,16 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         return ResponseEntity.ok(me);
+    }
+
+    @Override
+    public ResponseEntity<?> blockUser(UUID id, boolean block) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> RestException.restThrow("User not found", HttpStatus.NOT_FOUND)
+        );
+        user.setBlocked(block);
+        userRepository.save(user);
+        return ResponseEntity.status(202).body(Rest.EDITED);
     }
 }
 

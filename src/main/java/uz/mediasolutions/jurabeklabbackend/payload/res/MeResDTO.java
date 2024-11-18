@@ -17,6 +17,8 @@ public class MeResDTO {
 
     private String firstName;
 
+    private boolean blocked;
+
     private String lastName;
 
     private String username;
