@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
         if (dto.getOtp() == null || dto.getOtp().isEmpty()) {
             if (dto.getPhoneNumber().equals("+998 00 000-00-00")) {
                 return ResponseEntity.ok("OTP is sent");
-            } else if (userRepository.existsByPhoneNumberAndDeletedFalse(dto.getPhoneNumber())) {
+            } else if (!userRepository.existsByPhoneNumberAndDeletedFalse(dto.getPhoneNumber())) {
                 if (userRepository.existsByPhoneNumberAndBlockedTrue(dto.getPhoneNumber())) {
                     throw RestException.restThrow("Blocked", HttpStatus.UNAUTHORIZED);
                 }
