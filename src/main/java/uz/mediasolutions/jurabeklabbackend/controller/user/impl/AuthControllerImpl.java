@@ -8,7 +8,6 @@ import uz.mediasolutions.jurabeklabbackend.payload.req.SignInDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.SignUpDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.res.TokenUserDTO;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.AuthService;
-import uz.mediasolutions.jurabeklabbackend.service.user.impl.SmsService;
 
 import java.util.Map;
 

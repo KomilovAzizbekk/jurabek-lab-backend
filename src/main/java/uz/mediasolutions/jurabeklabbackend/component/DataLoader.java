@@ -55,7 +55,7 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void addTestUser() {
-        if (userRepository.existsByPhoneNumberAndDeletedFalse("+998 00 000-00-00")) {
+        if (!userRepository.existsByPhoneNumberAndDeletedFalse("+998 00 000-00-00")) {
             User user = User.builder()
                     .deleted(false)
                     .balance(new BigDecimal(0))

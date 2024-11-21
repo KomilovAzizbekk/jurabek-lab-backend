@@ -18,14 +18,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(value = "SELECT o.id,\n" +
             "       o.status,\n" +
-            "       o.created_at            as createdTime,\n" +
-            "       o.accepted_time         as acceptedTime,\n" +
-            "       o.total_price           as totalPrice,\n" +
-            "       p.name                  as pharmacy,\n" +
-            "       o.pharmacy_phone_number as phoneNumber,\n" +
+            "       o.created_at                       as createdTime,\n" +
+            "       o.accepted_time                    as acceptedTime,\n" +
+            "       o.total_price                      as totalPrice,\n" +
+            "       p.name                             as pharmacy,\n" +
+            "       o.pharmacy_phone_number            as phoneNumber,\n" +
+            "       u.phone_number                     as userPhone,\n" +
+            "       u.first_name || ' ' || u.last_name as fullName,\n" +
             "       p.address\n" +
             "FROM orders o\n" +
             "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
+            "         LEFT JOIN users u ON o.user_id = u.id\n" +
             "WHERE (:status IS NULL\n" +
             "    OR o.status = :status)\n" +
             "  AND o.user_id = :userId\n" +
@@ -36,14 +39,17 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(value = "SELECT o.id,\n" +
             "       o.status,\n" +
-            "       o.created_at            as createdTime,\n" +
-            "       o.accepted_time         as acceptedTime,\n" +
-            "       o.total_price           as totalPrice,\n" +
-            "       p.name                  as pharmacy,\n" +
-            "       o.pharmacy_phone_number as phoneNumber,\n" +
+            "       o.created_at                       as createdTime,\n" +
+            "       o.accepted_time                    as acceptedTime,\n" +
+            "       o.total_price                      as totalPrice,\n" +
+            "       p.name                             as pharmacy,\n" +
+            "       o.pharmacy_phone_number            as phoneNumber,\n" +
+            "       u.phone_number                     as userPhone,\n" +
+            "       u.first_name || ' ' || u.last_name as fullName,\n" +
             "       p.address\n" +
             "FROM orders o\n" +
             "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
+            "         LEFT JOIN users u ON o.user_id = u.id\n" +
             "WHERE o.id = :id\n" +
             "  AND o.user_id = :userId\n" +
             "ORDER BY o.created_at DESC", nativeQuery = true)

@@ -62,9 +62,6 @@ public class AuthServiceImpl implements AuthService {
             if (dto.getPhoneNumber().equals("+998 00 000-00-00")) {
                 return ResponseEntity.ok("OTP is sent");
             } else if (!userRepository.existsByPhoneNumberAndDeletedFalse(dto.getPhoneNumber())) {
-                if (userRepository.existsByPhoneNumberAndBlockedTrue(dto.getPhoneNumber())) {
-                    throw RestException.restThrow("Blocked", HttpStatus.UNAUTHORIZED);
-                }
                 User user = User.builder()
                         .phoneNumber(dto.getPhoneNumber())
                         .role(RoleName.ROLE_USER)
@@ -99,9 +96,11 @@ public class AuthServiceImpl implements AuthService {
                 Random rand = new Random();
                 String otp = String.format("%04d", rand.nextInt(10000));
 
+                System.out.println(otp);
                 existingUser.setOtp(otp);
                 existingUser.setLastOtpTime(Instant.now().atOffset(ZoneOffset.UTC).toLocalDateTime());
-                userRepository.save(existingUser);
+                User saved = userRepository.save(existingUser);
+                System.out.println(saved.getOtp());
 
                 HttpStatusCode statusCode = smsService.sendSms(dto.getPhoneNumber(), message + otp, "4546", callbackUrl);
 
