@@ -21,4 +21,8 @@ public interface Order2DTO {
 
     String getAddress();
 
+    String getUserPhone();
+
+    String getFullName();
+
 }

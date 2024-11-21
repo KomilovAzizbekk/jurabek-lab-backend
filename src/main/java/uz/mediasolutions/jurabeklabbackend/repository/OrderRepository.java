@@ -56,19 +56,24 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     OrderDTO getOrdersById(@Param("id") Long id,
                            @Param("userId") UUID userId);
 
-    @Query(value = "SELECT o.id,\n" +
-            "       o.status,\n" +
-            "       o.created_at            as createdTime,\n" +
-            "       p.inn,\n" +
-            "       o.total_price           as totalPrice,\n" +
-            "       p.name                  as pharmacy,\n" +
-            "       o.pharmacy_phone_number as phoneNumber,\n" +
-            "       p.address\n" +
-            "FROM orders o\n" +
-            "         LEFT JOIN pharmacies p ON p.id = o.pharmacy_id\n" +
-            "WHERE :status IS NULL\n" +
-            "   OR o.status = :status\n" +
-            "ORDER BY o.created_at DESC", nativeQuery = true)
+    @Query(value = """
+            SELECT o.id,
+                   o.status,
+                   o.created_at                       as createdTime,
+                   p.inn,
+                   o.total_price                      as totalPrice,
+                   p.name                             as pharmacy,
+                   o.pharmacy_phone_number            as phoneNumber,
+                   u.phone_number                     as userPhone,
+                   u.first_name || ' ' || u.last_name as fullName,
+                   p.address
+            FROM orders o
+                     LEFT JOIN pharmacies p ON p.id = o.pharmacy_id
+                     LEFT JOIN users u ON o.user_id = u.id
+            WHERE :status IS NULL
+               OR o.status = :status
+            ORDER BY o.created_at DESC
+            """, nativeQuery = true)
     Page<Order2DTO> getAllOrders(@Param("status") String status,
                                  Pageable pageable);
 
