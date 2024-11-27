@@ -5,9 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import uz.mediasolutions.jurabeklabbackend.entity.RefreshToken;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.exceptions.RestException;
 import uz.mediasolutions.jurabeklabbackend.payload.req.ProfileReqDTO;
+import uz.mediasolutions.jurabeklabbackend.repository.RefreshTokenRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.UserService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
@@ -20,6 +22,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public ResponseEntity<?> edit(UUID id, ProfileReqDTO dto) {
@@ -52,6 +55,9 @@ public class UserServiceImpl implements UserService {
         }
         user.setDeleted(true);
         userRepository.save(user);
+
+        refreshTokenRepository.deleteByUserId(id);
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Rest.DELETED);
     }
 }
