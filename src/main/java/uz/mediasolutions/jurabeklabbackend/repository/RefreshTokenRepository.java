@@ -10,7 +10,4 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long
     boolean existsByUserId(UUID id);
 
     RefreshToken findByUserId(UUID id);
-
-    @Query(value = "DELETE FROM refresh_token WHERE user_id = :user_id", nativeQuery = true)
-    void deleteByUserId(UUID id);
 }

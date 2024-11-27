@@ -56,7 +56,9 @@ public class UserServiceImpl implements UserService {
         user.setDeleted(true);
         userRepository.save(user);
 
-        refreshTokenRepository.deleteByUserId(id);
+        RefreshToken byUserId = refreshTokenRepository.findByUserId(id);
+
+        refreshTokenRepository.deleteById(byUserId.getId());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Rest.DELETED);
     }
