@@ -88,6 +88,7 @@ public class ProductServiceImpl implements ProductService {
             }
             Optional.ofNullable(dto.getImageUrl()).ifPresent(product::setImageUrl);
             Optional.ofNullable(dto.getDescription()).ifPresent(product::setDescription);
+            Optional.ofNullable(dto.getIsActive()).ifPresent(product::setActive);
 
             productRepository.save(product);
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
@@ -165,6 +166,7 @@ public class ProductServiceImpl implements ProductService {
                         .name(name)
                         .translate(transliterate)
                         .deleted(false)
+                        .isActive(true)
                         .build();
             }
         }

@@ -2,6 +2,7 @@ package uz.mediasolutions.jurabeklabbackend.payload.res;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -34,5 +35,7 @@ public class MeResDTO {
     private String androidUrl;
 
     private String iosUrl;
+
+    private BigDecimal minOrderPrice;
 
 }

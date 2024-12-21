@@ -19,7 +19,7 @@ import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 public interface OrderController {
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ORDER_MANAGER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     content = {@Content(mediaType = "application/json",
@@ -30,7 +30,7 @@ public interface OrderController {
                              @RequestParam(required = false) String status);
 
     @GetMapping("/get-order-products/{orderId}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ORDER_MANAGER')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     content = {@Content(mediaType = "application/json",
@@ -41,12 +41,12 @@ public interface OrderController {
                                                 @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size);
 
     @PutMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ORDER_MANAGER')")
     ResponseEntity<?> edit(@PathVariable Long id,
                            @RequestBody @Valid OrderReq2DTO dto);
 
     @PatchMapping("/accept/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ORDER_MANAGER')")
     ResponseEntity<?> accept(@PathVariable Long id,
                              @RequestParam(defaultValue = "false") boolean accept);
 

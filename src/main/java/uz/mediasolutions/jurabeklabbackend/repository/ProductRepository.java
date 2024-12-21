@@ -14,17 +14,37 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    @Query(value = "SELECT p.id,\n" +
-            "       p.name,\n" +
-            "       p.price,\n" +
-            "       p.image_url as imageUrl,\n" +
-            "       p.description\n" +
-            "FROM products p\n" +
-            "WHERE ((:search IS NULL OR p.name ILIKE '%' || :search || '%')\n" +
-            "    OR (:search IS NULL OR p.translate ILIKE '%' || :search || '%'))\n" +
-            "  AND p.deleted = false\n" +
-            "ORDER BY p.created_at DESC", nativeQuery = true)
+    @Query(value = """
+            SELECT p.id,
+                   p.name,
+                   p.price,
+                   p.image_url as imageUrl,
+                   p.description,
+                   p.is_active as isActive
+            FROM products p
+            WHERE ((:search IS NULL OR p.name ILIKE '%' || :search || '%')
+                OR (:search IS NULL OR p.translate ILIKE '%' || :search || '%'))
+              AND p.deleted = false
+            ORDER BY p.name, p.created_at DESC
+            """, nativeQuery = true)
     Page<ProductDTO> findAllWithSearch(@Param("search") String search,
+                                       Pageable pageable);
+
+    @Query(value = """
+            SELECT p.id,
+                   p.name,
+                   p.price,
+                   p.image_url as imageUrl,
+                   p.description,
+                   p.is_active as isActive
+            FROM products p
+            WHERE ((:search IS NULL OR p.name ILIKE '%' || :search || '%')
+                OR (:search IS NULL OR p.translate ILIKE '%' || :search || '%'))
+              AND p.deleted = false
+              AND p.is_active = true
+            ORDER BY p.name, p.created_at DESC
+            """, nativeQuery = true)
+    Page<ProductDTO> findAllWithSearchForApp(@Param("search") String search,
                                        Pageable pageable);
 
     @Query(value = "SELECT p.id,\n" +

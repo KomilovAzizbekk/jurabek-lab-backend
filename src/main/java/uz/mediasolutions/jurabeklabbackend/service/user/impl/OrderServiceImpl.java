@@ -30,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
     private final DistrictRepository districtRepository;
+    private final ConstantsRepository constantsRepository;
 
     @Override
     public ResponseEntity<Page<?>> findAll(int page, int size, String status) {
@@ -60,6 +61,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public ResponseEntity<?> add(OrderReqDTO dto) {
+        Constants constants = constantsRepository.findById(1L).orElse(null);
+        if (constants != null) {
+            if (dto.getTotalPrice().subtract(constants.getMinOrderPrice()).intValue() < 0) {
+                throw RestException.restThrow("Lower price than min order price", HttpStatus.BAD_REQUEST);
+            }
+        }
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

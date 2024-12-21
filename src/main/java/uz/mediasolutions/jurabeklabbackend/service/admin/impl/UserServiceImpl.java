@@ -143,6 +143,7 @@ public class UserServiceImpl implements UserService {
                 .androidVersion(constants != null ? constants.getAndroidVersion() : null)
                 .androidUrl(constants != null ? constants.getAndroidUrl() : null)
                 .iosUrl(constants != null ? constants.getIosUrl() : null)
+                .minOrderPrice(constants != null ? constants.getMinOrderPrice() : null)
                 .build();
 
         return ResponseEntity.ok(me);

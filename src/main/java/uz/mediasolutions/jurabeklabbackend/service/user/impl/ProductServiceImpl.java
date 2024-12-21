@@ -18,7 +18,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<?> getAll(int page, int size, String search) {
-        Page<ProductDTO> allProducts = productRepository.findAllWithSearch(search, PageRequest.of(page, size));
+        Page<ProductDTO> allProducts = productRepository.findAllWithSearchForApp(search, PageRequest.of(page, size));
         return ResponseEntity.ok(allProducts);
     }
 

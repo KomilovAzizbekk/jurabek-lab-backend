@@ -38,4 +38,7 @@ public class Product extends AbsLongDef {
     @Column(name = "deleted")
     private boolean deleted;
 
+    @Column(name = "is_active")
+    private boolean isActive;
+
 }

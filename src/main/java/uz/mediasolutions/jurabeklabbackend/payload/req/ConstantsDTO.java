@@ -2,6 +2,8 @@ package uz.mediasolutions.jurabeklabbackend.payload.req;
 
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,5 +22,7 @@ public class ConstantsDTO {
     private String androidUrl;
 
     private String iosUrl;
+
+    private Integer minOrderPrice;
 
 }

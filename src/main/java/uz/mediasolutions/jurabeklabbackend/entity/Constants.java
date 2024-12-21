@@ -3,6 +3,8 @@ package uz.mediasolutions.jurabeklabbackend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "constants")
 @AllArgsConstructor
@@ -28,4 +30,9 @@ public class Constants {
 
     private String iosUrl;
 
+    private BigDecimal minOrderPrice;
+
+    public void setMinOrderPrice(Integer integer) {
+        this.minOrderPrice = BigDecimal.valueOf(integer);
+    }
 }

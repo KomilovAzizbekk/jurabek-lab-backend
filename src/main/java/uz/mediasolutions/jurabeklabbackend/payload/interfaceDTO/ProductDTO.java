@@ -14,4 +14,6 @@ public interface ProductDTO {
 
     String getDescription();
 
+    Boolean getIsActive();
+
 }

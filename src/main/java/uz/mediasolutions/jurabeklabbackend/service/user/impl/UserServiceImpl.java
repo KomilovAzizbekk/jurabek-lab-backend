@@ -14,7 +14,6 @@ import uz.mediasolutions.jurabeklabbackend.repository.UserRepository;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.UserService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service("userUserService")

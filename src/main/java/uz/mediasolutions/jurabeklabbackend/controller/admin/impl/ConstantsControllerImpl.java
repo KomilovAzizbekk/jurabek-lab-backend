@@ -40,6 +40,7 @@ public class ConstantsControllerImpl implements ConstantsController {
         Optional.ofNullable(dto.getIosVersion()).ifPresent(constants::setIosVersion);
         Optional.ofNullable(dto.getIosUrl()).ifPresent(constants::setIosUrl);
         Optional.ofNullable(dto.getAndroidUrl()).ifPresent(constants::setAndroidUrl);
+        Optional.ofNullable(dto.getMinOrderPrice()).ifPresent(constants::setMinOrderPrice);
         constantsRepository.save(constants);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }

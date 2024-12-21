@@ -13,4 +13,6 @@ public class ProductEditDTO {
 
     private String imageUrl;
 
+    private Boolean isActive;
+
 }
