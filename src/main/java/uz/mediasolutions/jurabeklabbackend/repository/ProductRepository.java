@@ -30,23 +30,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<ProductDTO> findAllWithSearch(@Param("search") String search,
                                        Pageable pageable);
 
-    @Query(value = """
-            SELECT p.id,
-                   p.name,
-                   p.price,
-                   p.image_url as imageUrl,
-                   p.description,
-                   p.is_active as isActive
-            FROM products p
-            WHERE ((:search IS NULL OR p.name ILIKE '%' || :search || '%')
-                OR (:search IS NULL OR p.translate ILIKE '%' || :search || '%'))
-              AND p.deleted = false
-              AND p.is_active = true
-            ORDER BY p.name, p.created_at DESC
-            """, nativeQuery = true)
-    Page<ProductDTO> findAllWithSearchForApp(@Param("search") String search,
-                                       Pageable pageable);
-
     @Query(value = "SELECT p.id,\n" +
             "       p.name,\n" +
             "       p.price                 as pricePerProduct,\n" +
