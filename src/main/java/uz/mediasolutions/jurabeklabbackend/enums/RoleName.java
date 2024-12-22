@@ -8,6 +8,6 @@ public enum RoleName {
 
     ROLE_USER,
 
-    ORDER_MANAGER
+    ROLE_ORDER_MANAGER
 
 }
