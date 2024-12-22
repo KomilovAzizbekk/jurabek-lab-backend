@@ -79,21 +79,21 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByIdAndDeletedFalse(id).orElseThrow(
                 () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
         );
-        String imageUrl = dto.getImageUrl();
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            try {
-                fileService.deleteFile(product.getImageUrl());
-            } catch (Exception e) {
-                System.out.println("Error deleting image");
-            }
-            Optional.ofNullable(dto.getImageUrl()).ifPresent(product::setImageUrl);
-            Optional.ofNullable(dto.getDescription()).ifPresent(product::setDescription);
-            Optional.ofNullable(dto.getIsActive()).ifPresent(product::setActive);
 
-            productRepository.save(product);
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
-        }
-        throw RestException.restThrow("Image not found", HttpStatus.NOT_FOUND);
+        Optional.ofNullable(dto.getImageUrl()).ifPresent(imageUrl -> {
+                    try {
+                        fileService.deleteFile(product.getImageUrl());
+                    } catch (Exception e) {
+                        System.out.println("Error deleting image");
+                    }
+                    product.setImageUrl(imageUrl);
+                }
+        );
+        Optional.ofNullable(dto.getDescription()).ifPresent(product::setDescription);
+        Optional.ofNullable(dto.getIsActive()).ifPresent(product::setActive);
+
+        productRepository.save(product);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(Rest.EDITED);
     }
 
 
