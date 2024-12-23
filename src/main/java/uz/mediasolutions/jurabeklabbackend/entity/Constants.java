@@ -32,7 +32,13 @@ public class Constants {
 
     private BigDecimal minOrderPrice;
 
+    private BigDecimal minTransactionSum;
+
     public void setMinOrderPrice(Integer integer) {
         this.minOrderPrice = BigDecimal.valueOf(integer);
+    }
+
+    public void setMinTransactionSum(Integer integer) {
+        this.minTransactionSum = BigDecimal.valueOf(integer);
     }
 }

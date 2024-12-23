@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import uz.mediasolutions.jurabeklabbackend.entity.Card;
+import uz.mediasolutions.jurabeklabbackend.entity.Constants;
 import uz.mediasolutions.jurabeklabbackend.entity.Transaction;
 import uz.mediasolutions.jurabeklabbackend.entity.User;
 import uz.mediasolutions.jurabeklabbackend.enums.TransactionStatus;
@@ -19,6 +20,7 @@ import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.TransactionHisto
 import uz.mediasolutions.jurabeklabbackend.payload.req.CardReqDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.req.WithdrawReqDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.CardRepository;
+import uz.mediasolutions.jurabeklabbackend.repository.ConstantsRepository;
 import uz.mediasolutions.jurabeklabbackend.repository.TransactionRepository;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.TransactionService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
@@ -34,6 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final CardRepository cardRepository;
+    private final ConstantsRepository constantsRepository;
 
     @Override
     public ResponseEntity<?> getInfo() {
@@ -71,6 +74,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public ResponseEntity<?> withdraw(WithdrawReqDTO dto) {
+        Constants constants = constantsRepository.findById(1L).orElse(null);
+        if (constants != null) {
+            if (dto.getAmount().subtract(constants.getMinTransactionSum()).intValue() < 0) {
+                throw RestException.restThrow("Lower sum than min transaction sum", HttpStatus.BAD_REQUEST);
+            }
+        }
+
         Card card = cardRepository.findById(dto.getCardId()).orElseThrow(
                 () -> RestException.restThrow("Card not found", HttpStatus.NOT_FOUND)
         );

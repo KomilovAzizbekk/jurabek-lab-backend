@@ -144,6 +144,7 @@ public class UserServiceImpl implements UserService {
                 .androidUrl(constants != null ? constants.getAndroidUrl() : null)
                 .iosUrl(constants != null ? constants.getIosUrl() : null)
                 .minOrderPrice(constants != null ? constants.getMinOrderPrice() : null)
+                .minTransactionSum(constants != null ? constants.getMinTransactionSum() : null)
                 .build();
 
         return ResponseEntity.ok(me);

@@ -38,4 +38,6 @@ public class MeResDTO {
 
     private BigDecimal minOrderPrice;
 
+    private BigDecimal minTransactionSum;
+
 }
