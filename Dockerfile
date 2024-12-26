@@ -4,7 +4,7 @@ RUN mkdir /app
 COPY . /app/
 WORKDIR /app
 RUN cd /app/
-RUN cp -f /app/src/main/resources/application-prod.yml /app/src/main/resources/application.yml
+RUN cp -f /app/src/main/resources/application-prod.properties /app/src/main/resources/application.properties
 RUN mvn clean package -DskipTests
 RUN mvn install  -DskipTests
 RUN cp -f /app/target/*.jar /app/jurabek-lab.jar
