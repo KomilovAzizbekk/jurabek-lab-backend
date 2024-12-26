@@ -1,5 +1,6 @@
 FROM maven:3.9.5-amazoncorretto-21-debian-bookworm
 ENV TZ="Asia/Tashkent"
+RUN git pull
 RUN mkdir /app
 COPY . /app/
 WORKDIR /app
