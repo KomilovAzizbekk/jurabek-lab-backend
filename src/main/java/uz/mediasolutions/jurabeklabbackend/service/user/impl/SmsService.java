@@ -20,7 +20,6 @@ import uz.mediasolutions.jurabeklabbackend.payload.res.SmsTokenResDTO;
 import uz.mediasolutions.jurabeklabbackend.repository.SmsTokenRepository;
 
 import java.sql.Timestamp;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -78,7 +77,6 @@ public class SmsService {
     // Har 29 kunda bajariladi (millisekundlarda 29 kun = 29 * 24 * 60 * 60 * 1000 ms)
     @Scheduled(fixedRate = 2505600000L) // 29 kun
     public void autoRefreshToken() {
-        System.out.println("Tokenni avtomatik yangilash jarayoni boshlandi.");
         try {
             refreshToken();
             System.out.println("Token muvaffaqiyatli yangilandi.");
