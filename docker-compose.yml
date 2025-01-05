@@ -1,32 +1,32 @@
-version: '3.8'
-
-services:
-  app:
-    container_name: ${CONTAINER_NAME}-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
-    environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
-      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
-    depends_on: []
-    env_file: .env
-    restart: always
-
-#  db:
-#    image: postgres:14
-#    container_name: ${CONTAINER_NAME}-db
-#    restart: always
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: root123
-#      POSTGRES_DB: jurabek_lab
+#version: '3.8'
+#
+#services:
+#  app:
+#    container_name: ${CONTAINER_NAME}-app
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
 #    ports:
-#      - "5433:5432"
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#      - ./jurabek_backup.sql:/docker-entrypoint-initdb.d/1-init.sql
+#      - "8081:8081"
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=prod
+#      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+#      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+#      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+#    depends_on: []
+#    env_file: .env
+#    restart: always
+#
+##  db:
+##    image: postgres:14
+##    container_name: ${CONTAINER_NAME}-db
+##    restart: always
+##    environment:
+##      POSTGRES_USER: postgres
+##      POSTGRES_PASSWORD: root123
+##      POSTGRES_DB: jurabek_lab
+##    ports:
+##      - "5433:5432"
+##    volumes:
+##      - postgres_data:/var/lib/postgresql/data
+##      - ./jurabek_backup.sql:/docker-entrypoint-initdb.d/1-init.sql
