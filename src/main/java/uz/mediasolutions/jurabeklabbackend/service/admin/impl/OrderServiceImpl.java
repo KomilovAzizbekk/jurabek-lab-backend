@@ -136,30 +136,40 @@ public class OrderServiceImpl implements OrderService {
         if (!order.getStatus().equals(OrderStatus.SENT)) {
             throw RestException.restThrow("Order is already processed", HttpStatus.CONFLICT);
         }
+        Transaction transaction;
 
         if (accept) {
             user.setBalance(user.getBalance().add(income));
             notification.setType(NotificationType.ORDER_CONFIRMED);
             order.setStatus(OrderStatus.CONFIRMED);
             order.setAcceptedTime(new Timestamp(System.currentTimeMillis()));
+
+            transaction = Transaction.builder()
+                    .type(TransactionType.INCOME)
+                    .user(order.getUser())
+                    .amount(income)
+                    .status(TransactionStatus.DONE)
+                    .pharmacyId(pharmacy.getId())
+                    .pharmacyName(pharmacy.getName())
+                    .build();
         } else {
             notification.setType(NotificationType.ORDER_CANCELLED);
             order.setStatus(OrderStatus.REJECTED);
+
+            transaction = Transaction.builder()
+                    .type(TransactionType.INCOME)
+                    .user(order.getUser())
+                    .amount(income)
+                    .status(TransactionStatus.REJECTED)
+                    .pharmacyId(pharmacy.getId())
+                    .pharmacyName(pharmacy.getName())
+                    .build();
         }
         pharmacy.setEnableOrder(true);
 
         pharmacyRepository.save(pharmacy);
         orderRepository.save(order);
         notificationRepository.save(notification);
-
-        Transaction transaction = Transaction.builder()
-                .type(TransactionType.INCOME)
-                .user(order.getUser())
-                .amount(income)
-                .status(TransactionStatus.DONE)
-                .pharmacyId(pharmacy.getId())
-                .pharmacyName(pharmacy.getName())
-                .build();
 
         transactionRepository.save(transaction);
 
