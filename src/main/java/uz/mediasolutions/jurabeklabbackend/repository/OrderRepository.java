@@ -60,6 +60,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             SELECT o.id,
                    o.status,
                    o.created_at                       as createdTime,
+                   o.updated_at                       as updatedTime,
                    p.inn,
                    o.total_price                      as totalPrice,
                    p.name                             as pharmacy,

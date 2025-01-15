@@ -13,6 +13,8 @@ public interface Order2DTO {
 
     Timestamp getCreatedTime();
 
+    Timestamp getUpdatedTime();
+
     BigDecimal getTotalPrice();
 
     String getPharmacy();
