@@ -25,4 +25,6 @@ public interface Order2DTO {
 
     String getFullName();
 
+    String getUpdatedBy();
+
 }

@@ -66,10 +66,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
                    o.pharmacy_phone_number            as phoneNumber,
                    u.phone_number                     as userPhone,
                    u.first_name || ' ' || u.last_name as fullName,
-                   p.address
+                   p.address,
+                   updater.username                   as updatedBy
             FROM orders o
                      LEFT JOIN pharmacies p ON p.id = o.pharmacy_id
                      LEFT JOIN users u ON o.user_id = u.id
+                     LEFT JOIN users updater ON o.updated_by = updater.id
             WHERE :status IS NULL
                OR o.status = :status
             ORDER BY o.created_at DESC
