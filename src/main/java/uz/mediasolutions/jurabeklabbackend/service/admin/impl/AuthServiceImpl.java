@@ -29,12 +29,12 @@ public class AuthServiceImpl implements AuthService {
     public ResponseEntity<?> signIn(SignInAdminDTO dto) {
         User user = userRepository.findByUsernameAndDeletedFalse(dto.getUsername())
                 .orElseThrow(
-                        () -> RestException.restThrow("Admin not found", HttpStatus.UNAUTHORIZED)
+                        () -> RestException.restThrow("Admin not found", HttpStatus.NOT_FOUND)
                 );
         if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            throw RestException.restThrow("Password is incorrect", HttpStatus.UNAUTHORIZED);
+            throw RestException.restThrow("Password is incorrect", HttpStatus.BAD_REQUEST);
         } else if (user.getRole().equals(RoleName.ROLE_USER)) {
-            throw RestException.restThrow("Role is incorrect", HttpStatus.UNAUTHORIZED);
+            throw RestException.restThrow("Role is incorrect", HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ok(getToken(user));
     }

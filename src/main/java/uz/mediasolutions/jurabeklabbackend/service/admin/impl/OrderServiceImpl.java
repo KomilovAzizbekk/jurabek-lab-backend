@@ -67,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
             Product product1 = productRepository.findByIdAndDeletedFalse(product.getProductId())
                     .orElseThrow(() -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND));
 
-            totalPrice = totalPrice.add(product1.getPrice());
+            totalPrice = totalPrice.add(product1.getPrice().multiply(BigDecimal.valueOf(product.getQuantity())));
 
             // OrderProduct mavjudligini tekshirish
             OrderProduct op = existedOrderProducts.stream()

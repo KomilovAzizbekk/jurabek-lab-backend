@@ -35,9 +35,9 @@ public class ScheduleOrderService {
     private final ConstantsRepository constantsRepository;
     private final TransactionRepository transactionRepository;
 
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 43200000)
     public void scheduleRejectOrder() {
-        LocalDateTime localDateTime = LocalDateTime.now().minusHours(72);
+        LocalDateTime localDateTime = LocalDateTime.now().minusMonths(1);
         Timestamp cutoffTime = Timestamp.valueOf(localDateTime);
 
         List<Order> orders = orderRepository.findPendingOrdersBefore(cutoffTime);

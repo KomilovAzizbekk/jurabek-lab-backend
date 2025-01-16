@@ -74,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
                 existingUser = userRepository.save(user);
             } else {
                 existingUser = userRepository.findByPhoneNumberAndDeletedFalseAndBlockedFalse(dto.getPhoneNumber()).orElseThrow(
-                        () -> RestException.restThrow("User not found or blocked", HttpStatus.UNAUTHORIZED)
+                        () -> RestException.restThrow("User not found or blocked", HttpStatus.NOT_FOUND)
                 );
             }
 
@@ -134,12 +134,12 @@ public class AuthServiceImpl implements AuthService {
 
         // Agar phone number va otp junatilsa, tekshirish
         User u = userRepository.findByPhoneNumberAndDeletedFalseAndBlockedFalse(dto.getPhoneNumber()).orElseThrow(
-                () -> RestException.restThrow("User not found or blocked", HttpStatus.UNAUTHORIZED)
+                () -> RestException.restThrow("User not found or blocked", HttpStatus.NOT_FOUND)
         );
 
         if (dto.getOtp().equals(u.getOtp())) {
             User user = userRepository.findByPhoneNumberAndDeletedFalseAndBlockedFalse(dto.getPhoneNumber()).orElseThrow(
-                    () -> RestException.restThrow("Phone number not found or blocked", HttpStatus.UNAUTHORIZED)
+                    () -> RestException.restThrow("Phone number not found or blocked", HttpStatus.NOT_FOUND)
             );
 
             user.setOtp(null);
@@ -158,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<TokenUserDTO> signUp(String lang, SignUpDTO dto) {
         User user = userRepository.findByPhoneNumberAndDeletedFalseAndBlockedFalse(dto.getPhoneNumber()).orElseThrow(
-                () -> RestException.restThrow("Phone number not found or blocked", HttpStatus.UNAUTHORIZED)
+                () -> RestException.restThrow("Phone number not found or blocked", HttpStatus.NOT_FOUND)
         );
         user.setRegistered(true);
         user.setFirstName(dto.getFirstName());

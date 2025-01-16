@@ -41,12 +41,12 @@ public interface OrderController {
                                                 @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size);
 
     @PutMapping("/edit/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_ORDER_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     ResponseEntity<?> edit(@PathVariable Long id,
                            @RequestBody @Valid OrderReq2DTO dto);
 
     @PatchMapping("/accept/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_ORDER_MANAGER')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN')")
     ResponseEntity<?> accept(@PathVariable Long id,
                              @RequestParam(defaultValue = "false") boolean accept);
 
