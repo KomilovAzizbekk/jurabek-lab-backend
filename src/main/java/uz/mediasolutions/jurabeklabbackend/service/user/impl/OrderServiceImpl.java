@@ -64,19 +64,20 @@ public class OrderServiceImpl implements OrderService {
         Constants constants = constantsRepository.findById(1L).orElse(null);
         if (constants != null) {
             if (dto.getTotalPrice().subtract(constants.getMinOrderPrice()).intValue() < 0) {
-                throw RestException.restThrow("Lower price than min order price", HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(200).body("Lower price than min order price");
             }
         }
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (user == null) {
-            throw RestException.restThrow("Couldn't recognize user", HttpStatus.UNAUTHORIZED);
+            return ResponseEntity.status(200).body("Couldn't recognize user");
         }
 
-        District district = districtRepository.findById(dto.getDistrictId()).orElseThrow(
-                () -> RestException.restThrow("District not found", HttpStatus.NOT_FOUND)
-        );
+        District district = districtRepository.findById(dto.getDistrictId()).orElse(null);
+        if (district == null) {
+            return ResponseEntity.status(200).body("District not found");
+        }
 
         Pharmacy pharmacy;
 
@@ -90,9 +91,11 @@ public class OrderServiceImpl implements OrderService {
                     .build();
             pharmacyRepository.save(pharmacy);
         } else {
-            pharmacy = pharmacyRepository.findById(dto.getPharmacyId()).orElseThrow(
-                    () -> RestException.restThrow("Pharmacy not found", HttpStatus.NOT_FOUND)
-            );
+            pharmacy = pharmacyRepository.findById(dto.getPharmacyId()).orElse(null);
+
+            if (pharmacy == null) {
+                return ResponseEntity.status(200).body("Pharmacy not found");
+            }
 
             if (!pharmacy.getEnableOrder()) {
                 return ResponseEntity.status(200).body("Order limit exceeded");
@@ -122,9 +125,11 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderProductReqDTO product : products) {
 
-            Product product1 = productRepository.findById(product.getProductId()).orElseThrow(
-                    () -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND)
-            );
+            Product product1 = productRepository.findById(product.getProductId()).orElse(null);
+
+            if (product1 == null) {
+                return ResponseEntity.status(200).body("Product not found");
+            }
 
             OrderProduct orderProduct = OrderProduct.builder()
                     .order(savedOrder)
