@@ -16,4 +16,7 @@ public class OrderProductReqDTO {
     @NotNull
     private Integer quantity;
 
+    @NotNull
+    private Integer discountPercent;
+
 }

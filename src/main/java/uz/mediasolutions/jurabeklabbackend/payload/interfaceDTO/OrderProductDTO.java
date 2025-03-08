@@ -14,4 +14,6 @@ public interface OrderProductDTO {
 
     BigDecimal getPrice();
 
+    Integer getDiscountPercent();
+
 }

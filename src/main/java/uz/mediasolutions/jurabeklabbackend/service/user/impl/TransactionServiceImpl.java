@@ -25,6 +25,9 @@ import uz.mediasolutions.jurabeklabbackend.repository.TransactionRepository;
 import uz.mediasolutions.jurabeklabbackend.service.user.abs.TransactionService;
 import uz.mediasolutions.jurabeklabbackend.utills.constants.Rest;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -90,13 +93,36 @@ public class TransactionServiceImpl implements TransactionService {
             throw RestException.restThrow("Insufficient balance or withdrawal amount", HttpStatus.BAD_REQUEST);
         }
 
-        Transaction transaction = Transaction.builder()
-                .type(TransactionType.WITHDRAWAL)
-                .amount(dto.getAmount())
-                .card(card)
-                .user(user)
-                .status(TransactionStatus.WAITING)
-                .build();
+        Integer transactionSum = transactionRepository.getTransactionSum(user.getId());
+        int totalRequestedAmount = transactionSum + dto.getAmount().intValue();
+        if (user.getBalance().subtract(BigDecimal.valueOf(totalRequestedAmount)).intValue() < 0) {
+            throw RestException.restThrow("More amount you requested than your balance", HttpStatus.BAD_REQUEST);
+        }
+
+        Transaction transaction;
+
+        if (transactionSum == 0) {
+             transaction = Transaction.builder()
+                    .type(TransactionType.WITHDRAWAL)
+                    .amount(dto.getAmount())
+                    .card(card)
+                    .user(user)
+                    .status(TransactionStatus.WAITING)
+                    .build();
+        } else {
+            transaction = transactionRepository.findDistinctFirstByStatusAndUserIdAndCardId(TransactionStatus.WAITING, user.getId(), dto.getCardId());
+            if (transaction == null) {
+                transaction = Transaction.builder()
+                        .type(TransactionType.WITHDRAWAL)
+                        .amount(dto.getAmount())
+                        .card(card)
+                        .user(user)
+                        .status(TransactionStatus.WAITING)
+                        .build();
+            } else {
+                transaction.setAmount(transaction.getAmount().add(dto.getAmount()));
+            }
+        }
         transactionRepository.save(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(Rest.CREATED);
     }

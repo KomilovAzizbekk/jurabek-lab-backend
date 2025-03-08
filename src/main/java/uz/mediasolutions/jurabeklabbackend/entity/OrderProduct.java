@@ -24,4 +24,6 @@ public class OrderProduct extends AbsLongDef {
 
     private Integer quantity;
 
+    private Integer discountPercent;
+
 }

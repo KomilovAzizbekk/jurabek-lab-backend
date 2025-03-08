@@ -80,15 +80,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order2DTO> getAllOrders(@Param("status") String status,
                                  Pageable pageable);
 
-    @Query(value = "SELECT p.id,\n" +
-            "       p.name,\n" +
-            "       p.price,\n" +
-            "       p.image_url as imageUrl,\n" +
-            "       op.quantity\n" +
-            "FROM products p\n" +
-            "         LEFT JOIN order_products op ON op.product_id = p.id\n" +
-            "WHERE op.order_id = :orderId\n" +
-            "ORDER BY p.name", nativeQuery = true)
+    @Query(value = """
+            SELECT p.id,
+                   p.name,
+                   p.price,
+                   p.image_url         as imageUrl,
+                   op.quantity,
+                   op.discount_percent as discountPercent
+            FROM products p
+                     LEFT JOIN order_products op ON op.product_id = p.id
+            WHERE op.order_id = :orderId
+            ORDER BY p.name
+            """, nativeQuery = true)
     Page<OrderProductDTO> getOrderProducts(@Param("orderId") Long orderId,
                                            Pageable pageable);
 

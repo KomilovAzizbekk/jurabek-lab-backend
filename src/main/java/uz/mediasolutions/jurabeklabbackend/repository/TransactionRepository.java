@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import uz.mediasolutions.jurabeklabbackend.entity.Transaction;
+import uz.mediasolutions.jurabeklabbackend.enums.TransactionStatus;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.CardDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.InfoDTO;
 import uz.mediasolutions.jurabeklabbackend.payload.interfaceDTO.TrRequestDTO;
@@ -48,18 +49,31 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
                                                       @Param("type") String type,
                                                       Pageable pageable);
 
-    @Query(value = "SELECT t.id, c.number       as card,\n" +
-            "       t.amount,\n" +
-            "       t.number,\n" +
-            "       t.status,\n" +
-            "       u.phone_number as phoneNumber\n" +
-            "FROM transactions t\n" +
-            "         LEFT JOIN cards c ON c.id = t.card_id\n" +
-            "         LEFT JOIN users u ON u.id = t.user_id\n" +
-            "WHERE (:status IS NULL OR t.status = :status)\n" +
-            "  AND t.type = 'WITHDRAWAL'\n" +
-            "ORDER BY t.updated_at DESC", nativeQuery = true)
+    @Query(value = """
+            SELECT t.id,
+                   c.number       as card,
+                   t.amount,
+                   t.number,
+                   t.status,
+                   u.phone_number as phoneNumber
+            FROM transactions t
+                     LEFT JOIN cards c ON c.id = t.card_id
+                     LEFT JOIN users u ON u.id = t.user_id
+            WHERE (:status IS NULL OR t.status = :status)
+              AND t.type = 'WITHDRAWAL'
+            ORDER BY t.updated_at DESC
+            """, nativeQuery = true)
     Page<TrRequestDTO> getTransactionRequests(@Param("status") String status,
                                               Pageable pageable);
+
+    @Query(value = """
+            SELECT coalesce(sum(t.amount), 0) as amount
+            FROM transactions t
+            WHERE t.user_id = :user_id
+              AND t.status = 'WAITING'
+            """, nativeQuery = true)
+    Integer getTransactionSum(@Param("user_id") UUID userId);
+
+    Transaction findDistinctFirstByStatusAndUserIdAndCardId(TransactionStatus status, UUID userId, UUID cardId);
 
 }

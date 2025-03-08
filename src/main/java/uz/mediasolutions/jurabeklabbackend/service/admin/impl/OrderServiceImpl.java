@@ -67,7 +67,9 @@ public class OrderServiceImpl implements OrderService {
             Product product1 = productRepository.findByIdAndDeletedFalse(product.getProductId())
                     .orElseThrow(() -> RestException.restThrow("Product not found", HttpStatus.NOT_FOUND));
 
-            totalPrice = totalPrice.add(product1.getPrice().multiply(BigDecimal.valueOf(product.getQuantity())));
+            totalPrice = totalPrice.add(product1.getPrice()
+                    .multiply(BigDecimal.valueOf(product.getQuantity()))
+                    .multiply(BigDecimal.valueOf(1-product.getDiscountPercent()/100)));
 
             // OrderProduct mavjudligini tekshirish
             OrderProduct op = existedOrderProducts.stream()
@@ -77,10 +79,12 @@ public class OrderServiceImpl implements OrderService {
 
             if (op != null) { // Agar mavjud bo'lsa
                 op.setQuantity(product.getQuantity());
+                op.setDiscountPercent(product.getDiscountPercent());
                 orderProducts.add(op); // O'zgartirilgan instansiyani qo'shamiz
             } else { // Yangi OrderProduct yaratish
                 OrderProduct orderProduct = OrderProduct.builder()
                         .order(order)
+                        .discountPercent(product.getDiscountPercent())
                         .productId(product1.getId())
                         .productName(product1.getName())
                         .quantity(product.getQuantity())
