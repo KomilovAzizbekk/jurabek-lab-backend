@@ -19,6 +19,8 @@ public interface Order2DTO {
 
     String getPharmacy();
 
+    String getRegion();
+
     String getPhoneNumber();
 
     String getAddress();
