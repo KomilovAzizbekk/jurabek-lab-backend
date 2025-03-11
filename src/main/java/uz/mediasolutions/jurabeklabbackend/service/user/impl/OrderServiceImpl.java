@@ -133,6 +133,7 @@ public class OrderServiceImpl implements OrderService {
 
             OrderProduct orderProduct = OrderProduct.builder()
                     .order(savedOrder)
+                    .discountPercent(0)
                     .productId(product1.getId())
                     .productName(product1.getName())
                     .quantity(product.getQuantity())
