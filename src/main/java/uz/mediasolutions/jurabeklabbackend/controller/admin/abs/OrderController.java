@@ -29,6 +29,15 @@ public interface OrderController {
                              @RequestParam(defaultValue = Rest.DEFAULT_PAGE_SIZE) int size,
                              @RequestParam(required = false) String status);
 
+    @GetMapping("/get/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_ORDER_MANAGER')")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Order2DTO.class))})
+    })
+    ResponseEntity<?> getById(@PathVariable Long id);
+
     @GetMapping("/get-order-products/{orderId}")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_ORDER_MANAGER')")
     @ApiResponses(value = {

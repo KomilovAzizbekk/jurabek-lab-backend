@@ -101,4 +101,27 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query(value = "SELECT o.* from orders o WHERE o.status = 'SENT' AND o.created_at < :cutoff_time", nativeQuery = true)
     List<Order> findPendingOrdersBefore(@Param("cutoff_time") Timestamp cutoffTime);
 
+    @Query(value = """
+            SELECT o.id,
+                   o.status,
+                   o.created_at                       as createdTime,
+                   o.updated_at                       as updatedTime,
+                   p.inn,
+                   o.total_price                      as totalPrice,
+                   p.name                             as pharmacy,
+                   o.pharmacy_phone_number            as phoneNumber,
+                   u.phone_number                     as userPhone,
+                   u.first_name || ' ' || u.last_name as fullName,
+                   p.address,
+                   r.name                             as region,
+                   updater.username                   as updatedBy
+            FROM orders o
+                     LEFT JOIN pharmacies p ON p.id = o.pharmacy_id
+                     LEFT JOIN districts d ON p.district_id = d.id
+                     LEFT JOIN regions r ON d.region_id = r.id
+                     LEFT JOIN users u ON o.user_id = u.id
+                     LEFT JOIN users updater ON o.updated_by = updater.id
+            WHERE o.id = :id
+            """, nativeQuery = true)
+    Order2DTO getOrderById(@Param("id") Long id);
 }

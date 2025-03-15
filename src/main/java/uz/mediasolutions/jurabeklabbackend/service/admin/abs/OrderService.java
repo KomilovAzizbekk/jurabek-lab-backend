@@ -13,4 +13,6 @@ public interface OrderService {
     ResponseEntity<?> accept(Long id, boolean accept);
 
     ResponseEntity<Page<?>> getAllOrderProducts(Long orderId, int page, int size);
+
+    ResponseEntity<?> getById(Long id);
 }

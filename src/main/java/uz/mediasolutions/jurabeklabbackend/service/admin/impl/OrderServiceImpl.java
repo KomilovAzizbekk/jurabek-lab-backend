@@ -47,6 +47,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public ResponseEntity<?> getById(Long id) {
+        Order2DTO allOrders = orderRepository.getOrderById(id);
+        return ResponseEntity.ok(allOrders);
+    }
+
+    @Override
     @Transactional
     public ResponseEntity<?> edit(Long id, OrderReq2DTO dto) {
         // Buyurtma mavjudligini tekshirish

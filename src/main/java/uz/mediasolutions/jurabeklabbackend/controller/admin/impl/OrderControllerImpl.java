@@ -20,6 +20,11 @@ public class OrderControllerImpl implements OrderController {
     }
 
     @Override
+    public ResponseEntity<?> getById(Long id) {
+        return service.getById(id);
+    }
+
+    @Override
     public ResponseEntity<Page<?>> getAllOrderProducts(Long orderId, int page, int size) {
         return service.getAllOrderProducts(orderId, page, size);
     }
